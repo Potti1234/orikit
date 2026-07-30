@@ -24,6 +24,22 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
+  apps/inspector:
+    dependencies:
+      '@orikit/devtools-protocol':
+        specifier: workspace:*
+        version: link:../../packages/devtools-protocol
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 8.1.5
+        version: 8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
   apps/mobile-spike:
     dependencies:
       '@nativescript/core':
@@ -32,6 +48,9 @@ importers:
       '@nativescript/theme':
         specifier: 3.1.0
         version: 3.1.0
+      '@orikit/devtools-protocol':
+        specifier: workspace:*
+        version: link:../../packages/devtools-protocol
       '@orikit/location':
         specifier: workspace:*
         version: link:../../packages/location
@@ -100,6 +119,59 @@ importers:
       vite:
         specifier: 8.1.5
         version: 8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/devtools-protocol:
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/devtools-relay:
+    dependencies:
+      '@orikit/devtools-protocol':
+        specifier: workspace:*
+        version: link:../devtools-protocol
+      ws:
+        specifier: 8.21.1
+        version: 8.21.1
+    devDependencies:
+      '@types/ws':
+        specifier: 8.18.1
+        version: 8.18.1
+      tsx:
+        specifier: 4.23.1
+        version: 4.23.1
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/devtools-runtime:
+    dependencies:
+      '@orikit/devtools-protocol':
+        specifier: workspace:*
+        version: link:../devtools-protocol
+      '@orikit/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+      '@orikit/spike-core':
+        specifier: workspace:*
+        version: link:../spike-core
+    devDependencies:
+      effect:
+        specifier: 4.0.0-beta.102
+        version: 4.0.0-beta.102
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       vitest:
         specifier: 4.1.10
         version: 4.1.10(@types/node@26.1.2)(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
@@ -201,6 +273,9 @@ importers:
 
   packages/todo:
     dependencies:
+      '@orikit/devtools-runtime':
+        specifier: workspace:*
+        version: link:../devtools-runtime
       '@orikit/runtime':
         specifier: workspace:*
         version: link:../runtime
@@ -1195,6 +1270,9 @@ packages:
 
   '@types/slice-ansi@4.0.0':
     resolution: {integrity: sha512-+OpjSaq85gvlZAYINyzKpLeiFkSC4EsC6IIiT6v6TLSU5k5U83fHGj9Lel8oKEXM0HqgrMVCjXPDPVICtxF7EQ==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@vitest/expect@4.1.10':
     resolution: {integrity: sha512-YsCn+qAk1GWjQOWFEsEcL2gNQ0zmVmQu3T03qP6UyjhtmdtwtbuI+DASn/7iQB3HGTXkdBwGddzxPlmiql5vlA==}
@@ -5180,6 +5258,10 @@ snapshots:
       undici-types: 8.3.0
 
   '@types/slice-ansi@4.0.0': {}
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 26.1.2
 
   '@vitest/expect@4.1.10':
     dependencies:

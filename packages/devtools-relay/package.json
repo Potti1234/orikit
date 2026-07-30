@@ -1,0 +1,25 @@
+{
+  "name": "@orikit/devtools-relay",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "start": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@orikit/devtools-protocol": "workspace:*",
+    "ws": "8.21.1"
+  },
+  "devDependencies": {
+    "@types/ws": "8.18.1",
+    "tsx": "4.23.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@orikit/inspector",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": { "build": "vite build", "test": "vitest run", "typecheck": "tsc --noEmit", "dev": "vite --host 127.0.0.1" },
+  "dependencies": { "@orikit/devtools-protocol": "workspace:*" },
+  "devDependencies": { "typescript": "5.9.3", "vite": "8.1.5", "vitest": "4.1.10" }
+}
