@@ -68,6 +68,8 @@ The second option is a decision gate, not a Phase 0 assumption.
 | [19](19-phase2-portable-api.md) | Implemented Phase 2 Program, Story, trace, and replay API |
 | [Phase 3 evidence](../evidence/phase3-todo-vertical-slice.md) | Implemented Todo web/Android slice and device results |
 | [Phase 4 evidence](../evidence/phase4-production-runtime.md) | Production dispatch and Command supervision evidence |
+| [Phase 5 evidence](../evidence/phase5-native-location.md) | Android location capability and lifecycle evidence |
+| [Phase 6 evidence](../evidence/phase6-renderer-hardening.md) | Native renderer contracts, benchmark, and device evidence |
 
 ## Normative language
 
@@ -100,3 +102,7 @@ The Phase 4 portable production runtime is implemented and verified on a
 physical Samsung SM-G781B running Android 13. See
 [Phase 4 evidence](../evidence/phase4-production-runtime.md) and
 [ADR-0003](../adr/0003-production-runtime-mvp.md).
+
+Phase 5 native location and Phase 6 renderer hardening are implemented and
+verified on the same physical Android device. The next active milestone is
+Phase 7 remote DevTools history and inspection.

@@ -54,6 +54,7 @@ Read the NativeScript plan in this order:
 21. [Phase 3 Todo evidence](docs/evidence/phase3-todo-vertical-slice.md)
 22. [Phase 4 runtime evidence](docs/evidence/phase4-production-runtime.md)
 23. [Phase 5 native location evidence](docs/evidence/phase5-native-location.md)
+24. [Phase 6 renderer evidence](docs/evidence/phase6-renderer-hardening.md)
 
 ## Previous KMP plan
 
@@ -101,6 +102,13 @@ narrow typed Kotlin classifier for permanent permission denial. The native
 screen and lifecycle behavior are verified on the same physical Samsung. See
 the [Phase 5 evidence](docs/evidence/phase5-native-location.md) and
 [ADR-0004](docs/adr/0004-android-location-capability.md).
+
+Phase 6 extracts a native-only renderer contract with keyed reconciliation,
+property and event lifecycles, native-state preservation, accessibility,
+custom adapters, diagnostics, and benchmarks. Todo uses its virtualized-list
+reconciliation and preserves Android text selection. See the
+[Phase 6 evidence](docs/evidence/phase6-renderer-hardening.md) and
+[ADR-0005](docs/adr/0005-native-renderer-contract.md).
 
 iOS remains unverified until the macOS/Xcode phase runs.
 

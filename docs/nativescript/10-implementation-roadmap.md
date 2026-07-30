@@ -179,6 +179,9 @@ Implement reliable dispatch and effect supervision.
 
 ## Phase 5 — Android capability slice
 
+**Status: completed on Windows and physical Android on 2026-07-30.** See
+[Phase 5 evidence](../evidence/phase5-native-location.md).
+
 ### Objective
 
 Prove direct native access and Kotlin escape hatches in a real feature.
@@ -209,6 +212,9 @@ native callbacks. Camera is acceptable if location cannot be tested reliably.
 - Native boundary has no stable `any`.
 
 ## Phase 6 — renderer hardening
+
+**Status: completed on Windows and physical Android on 2026-07-30.** See
+[Phase 6 evidence](../evidence/phase6-renderer-hardening.md).
 
 ### Objective
 
