@@ -300,6 +300,9 @@ Support ongoing native/browser resources with model-driven lifecycle.
 
 ## Phase 9 — view-sharing decision
 
+Status: complete with an accepted separate-web/shared-native decision
+(2026-07-30). See [`../evidence/phase9-view-sharing.md`](../evidence/phase9-view-sharing.md).
+
 ### Objective
 
 Choose between separate views and a portable view AST using evidence.

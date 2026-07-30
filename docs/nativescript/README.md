@@ -66,6 +66,7 @@ The second option is a decision gate, not a Phase 0 assumption.
 | [17](17-feasibility-spike.md) | First bounded implementation experiment |
 | [18](18-references.md) | Primary research sources |
 | [19](19-phase2-portable-api.md) | Implemented Phase 2 Program, Story, trace, and replay API |
+| [20](20-phase9-view-boundary.md) | Accepted web/native sharing boundary and migration guide |
 | [Phase 3 evidence](../evidence/phase3-todo-vertical-slice.md) | Implemented Todo web/Android slice and device results |
 | [Phase 4 evidence](../evidence/phase4-production-runtime.md) | Production dispatch and Command supervision evidence |
 | [Phase 5 evidence](../evidence/phase5-native-location.md) | Android location capability and lifecycle evidence |
@@ -103,6 +104,7 @@ physical Samsung SM-G781B running Android 13. See
 [Phase 4 evidence](../evidence/phase4-production-runtime.md) and
 [ADR-0003](../adr/0003-production-runtime-mvp.md).
 
-Phase 5 native location and Phase 6 renderer hardening are implemented and
-verified on the same physical Android device. The next active milestone is
-Phase 7 remote DevTools history and inspection.
+Phases 5 through 9 are implemented and verified on the Windows/Android lanes.
+Phase 9 keeps Foldkit web views separate while sharing portable behavior,
+presentation projections, and Android/iOS native semantics. Phase 10 is the
+first macOS/Xcode iOS bring-up.

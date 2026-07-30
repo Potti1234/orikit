@@ -122,6 +122,13 @@ visibility, and a native Android accelerometer stream. See the
 [Phase 8 evidence](docs/evidence/phase8-managed-resources.md) and
 [ADR-0007](docs/adr/0007-managed-resource-lifecycle.md).
 
+Phase 9 accepts separate Foldkit web views, shared portable presentation
+projections, and shared Android/iOS native semantic trees with explicit
+platform themes and adapters. See the
+[Phase 9 evidence](docs/evidence/phase9-view-sharing.md),
+[migration guide](docs/nativescript/20-phase9-view-boundary.md), and
+[ADR-0008](docs/adr/0008-separate-web-shared-native-views.md).
+
 iOS remains unverified until the macOS/Xcode phase runs.
 
 ## License

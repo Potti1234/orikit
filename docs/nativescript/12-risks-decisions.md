@@ -194,7 +194,7 @@ Mitigation:
 
 ## 12.4 Open decisions after Todo
 
-- Separate views versus renderer-neutral AST.
+- iOS evidence may refine the accepted separate-web/shared-native view boundary.
 - NativeScript `Frame` versus platform-owned navigation.
 - Effect-based interpreter versus smaller Promise/Abort interface.
 - Nx versus plain pnpm workspace.

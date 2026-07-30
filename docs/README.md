@@ -21,6 +21,8 @@ Current implementation evidence is recorded through
 [`evidence/phase7-remote-devtools.md`](evidence/phase7-remote-devtools.md).
 Phase 8 resource-lifecycle evidence is in
 [`evidence/phase8-managed-resources.md`](evidence/phase8-managed-resources.md).
+The accepted view-sharing decision and experiment are recorded in
+[`evidence/phase9-view-sharing.md`](evidence/phase9-view-sharing.md).
 
 The other numbered documents in this directory describe the earlier
 Kotlin Multiplatform compiler approach. They are retained as research and as a
