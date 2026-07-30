@@ -15,6 +15,8 @@ export type DispatchSource =
   | Readonly<{ _tag: 'Devtools' }>
   | Readonly<{ _tag: 'Lifecycle' }>
   | Readonly<{ _tag: 'Runtime' }>
+  | Readonly<{ _tag: 'Subscription'; subscriptionId: string; generation: number }>
+  | Readonly<{ _tag: 'Resource'; resourceId: string; generation: number }>
 
 export type RuntimeDefect = Readonly<{
   name: string
