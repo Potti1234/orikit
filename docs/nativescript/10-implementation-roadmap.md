@@ -273,6 +273,9 @@ Make Android runtime behavior inspectable from the Windows machine.
 
 ## Phase 8 — Subscriptions and managed resources
 
+Status: complete on Windows and physical Android (2026-07-30). See
+[`../evidence/phase8-managed-resources.md`](../evidence/phase8-managed-resources.md).
+
 ### Objective
 
 Support ongoing native/browser resources with model-driven lifecycle.

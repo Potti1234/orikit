@@ -116,6 +116,12 @@ the live runtime continues, and resume returns explicitly to the live head. See
 the [Phase 7 evidence](docs/evidence/phase7-remote-devtools.md) and
 [ADR-0006](docs/adr/0006-debug-devtools-transport.md).
 
+Phase 8 adds model-driven Subscriptions and managed resources with stable-key
+reconciliation, causal emissions, bounded restart policy, DevTools lifecycle
+visibility, and a native Android accelerometer stream. See the
+[Phase 8 evidence](docs/evidence/phase8-managed-resources.md) and
+[ADR-0007](docs/adr/0007-managed-resource-lifecycle.md).
+
 iOS remains unverified until the macOS/Xcode phase runs.
 
 ## License
