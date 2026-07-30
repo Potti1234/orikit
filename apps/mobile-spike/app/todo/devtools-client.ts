@@ -35,7 +35,13 @@ export const connectTodoDevtools = (
       current.mode._tag === 'Traveling' ? current.mode.sequence : current.liveSequence
     const model =
       exported.records.find((record) => record.sequence === selected)?.modelAfter ?? null
-    send({ _tag: 'RuntimeState', info: info(true), model, records: exported.records })
+    send({
+      _tag: 'RuntimeState',
+      info: info(true),
+      model,
+      records: exported.records,
+      resources: history.resources(),
+    })
   }
   const respond = (response: InspectorResponse): void =>
     send({ _tag: 'InspectorResponse', response })

@@ -1,4 +1,4 @@
-import { createProductionRuntime } from '@orikit/runtime'
+import { createProductionRuntime, withManagedResources } from '@orikit/runtime'
 import { defineCommandContract, defineProgram, tagged, transition } from '@orikit/spike-core'
 import { Schema } from 'effect'
 import { describe, expect, it } from 'vitest'
@@ -92,6 +92,41 @@ describe('DevTools history', () => {
     expect(JSON.stringify(exported)).not.toContain('secret')
     expect(exported.records.at(-1)?.modelAfterFingerprint).toMatch(/^redacted-v1:/)
   })
+
+  it('records managed lifecycle and never restarts resources during travel', async () => {
+    let starts = 0
+    let emit: ((value: string) => void) | undefined
+    const managed = withManagedResources(runtime(), {
+      subscriptions: [
+        {
+          id: 'fixture.timer',
+          key: () => 'one-second',
+          start: (_model, context) => {
+            starts += 1
+            emit = (value) => context.dispatch(changed(value))
+          },
+        },
+      ],
+    })
+    const history = createDevtoolsHistory({
+      program,
+      runtime: managed,
+      managedResources: managed.managedResources,
+      managedResourceEvents: managed.managedResourceEvents,
+    })
+    emit?.('from resource')
+    await managed.flush()
+    expect(
+      history
+        .records()
+        .at(-1)
+        ?.resourceChanges.map((change) => change.action),
+    ).toContain('Emitted')
+    expect(history.resources()[0]).toMatchObject({ id: 'fixture.timer', generation: 1 })
+    history.travelTo(0)
+    history.resumeLive()
+    expect(starts).toBe(1)
+  })
 })
 
 describe('redactValue', () => {
@@ -99,5 +134,11 @@ describe('redactValue', () => {
     const source = { auth: { token: 'secret' } }
     expect(redactValue(source, ['auth.token'])).toEqual({ auth: { token: '[REDACTED]' } })
     expect(source.auth.token).toBe('secret')
+  })
+
+  it('redacts matching field names inside resource arrays', () => {
+    expect(redactValue([{ id: 'socket', key: 'secret-token' }], ['key'])).toEqual([
+      { id: 'socket', key: '[REDACTED]' },
+    ])
   })
 })

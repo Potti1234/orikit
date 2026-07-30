@@ -1,6 +1,7 @@
 import type {
   DevtoolsEventRecord,
   HistoryExport,
+  RecordedResourceState,
   RelayEnvelope,
   RuntimeInfo,
 } from '@orikit/devtools-protocol'
@@ -20,6 +21,7 @@ let socket: WebSocket | undefined
 let info: RuntimeInfo | undefined
 let records: ReadonlyArray<DevtoolsEventRecord> = []
 let selected: number | undefined
+let resources: ReadonlyArray<RecordedResourceState> = []
 
 const modelDiff = (before: unknown, after: unknown, path = '$'): ReadonlyArray<string> => {
   if (Object.is(before, after)) return []
@@ -46,7 +48,12 @@ const renderDetail = (): void => {
       ? 'Initial model'
       : modelDiff(previous?.modelAfter, record.modelAfter).join('\n') || 'No model changes'
   element('effects').textContent = JSON.stringify(
-    { message: record.message, commands: record.commands, resources: [] },
+    {
+      message: record.message,
+      commands: record.commands,
+      resourceChanges: record.resourceChanges,
+      activeResources: resources,
+    },
     null,
     2,
   )
@@ -123,6 +130,7 @@ element<HTMLButtonElement>('connect').onclick = () => {
     if (envelope._tag === 'RuntimeState') {
       info = envelope.info
       records = envelope.records
+      resources = envelope.resources
       selected ??= records.at(-1)?.sequence
     }
     if (
@@ -144,6 +152,7 @@ element<HTMLInputElement>('import').onchange = async (event) => {
   const archive = JSON.parse(await file.text()) as HistoryExport
   info = undefined
   records = archive.records
+  resources = []
   selected = records.at(-1)?.sequence
   render()
 }

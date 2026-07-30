@@ -1,4 +1,4 @@
-export const devtoolsProtocolVersion = 1 as const
+export const devtoolsProtocolVersion = 2 as const
 
 export type DevtoolsMode =
   | Readonly<{ _tag: 'Live' }>
@@ -7,6 +7,27 @@ export type DevtoolsMode =
 export type RecordedCommand = Readonly<{
   commandId?: string
   description: unknown
+}>
+
+export type RecordedResourceChange = Readonly<{
+  ordinal: number
+  kind: 'Subscription' | 'Resource'
+  id: string
+  key: unknown
+  generation: number
+  causedBySequence: number
+  action: 'Started' | 'Preserved' | 'Stopped' | 'Emitted' | 'Failed' | 'RestartScheduled'
+  reason?: string
+  defect?: Readonly<{ name: string; message: string; stack?: string }>
+}>
+
+export type RecordedResourceState = Readonly<{
+  kind: 'Subscription' | 'Resource'
+  id: string
+  key: unknown
+  generation: number
+  status: 'Starting' | 'Active' | 'Stopping' | 'Failed'
+  restartAttempt: number
 }>
 
 export type DevtoolsEventRecord = Readonly<{
@@ -20,6 +41,7 @@ export type DevtoolsEventRecord = Readonly<{
   modelAfter: unknown
   modelAfterFingerprint: string
   commands: ReadonlyArray<RecordedCommand>
+  resourceChanges: ReadonlyArray<RecordedResourceChange>
   updateDurationMicros: number
   snapshot: boolean
 }>
@@ -66,6 +88,7 @@ export type RelayEnvelope =
       info: RuntimeInfo
       model: unknown
       records: ReadonlyArray<DevtoolsEventRecord>
+      resources: ReadonlyArray<RecordedResourceState>
     }>
   | Readonly<{ _tag: 'InspectorRequest'; request: InspectorRequest }>
   | Readonly<{ _tag: 'InspectorResponse'; response: InspectorResponse }>

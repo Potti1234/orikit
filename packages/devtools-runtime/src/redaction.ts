@@ -1,7 +1,7 @@
 const redacted = '[REDACTED]'
 
 const visit = (value: unknown, path: string, sensitive: ReadonlySet<string>): unknown => {
-  if (sensitive.has(path)) return redacted
+  if (sensitive.has(path) || sensitive.has(path.split('.').at(-1) ?? '')) return redacted
   if (Array.isArray(value))
     return value.map((item, index) => visit(item, `${path}.${index}`, sensitive))
   if (typeof value === 'object' && value !== null) {

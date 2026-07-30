@@ -3,9 +3,10 @@ import {
   type DevtoolsMode,
   devtoolsProtocolVersion,
   type HistoryExport,
+  type RecordedResourceState,
   type RuntimeInfo,
 } from '@orikit/devtools-protocol'
-import type { ProductionRuntime, RuntimeSnapshot } from '@orikit/runtime'
+import type { ManagedResourceEvent, ProductionRuntime, RuntimeSnapshot } from '@orikit/runtime'
 import { codecsFor, type Program, type Tagged } from '@orikit/spike-core'
 
 import { fingerprint, type JsonValue } from './canonical'
@@ -27,6 +28,7 @@ export type DevtoolsHistory<Model> = Readonly<{
   resumeLive: () => void
   subscribe: (observer: (snapshot: DevtoolsSnapshot<Model>) => void) => () => void
   exportHistory: () => HistoryExport
+  resources: () => ReadonlyArray<RecordedResourceState>
   dispose: () => void
 }>
 
@@ -43,6 +45,8 @@ export type DevtoolsHistoryOptions<
   snapshotInterval?: number
   sensitivePaths?: ReadonlyArray<string>
   nowIso?: () => string
+  managedResources?: () => ReadonlyArray<RecordedResourceState>
+  managedResourceEvents?: () => ReadonlyArray<ManagedResourceEvent>
 }>
 
 const json = (value: unknown): JsonValue => value as JsonValue
@@ -61,6 +65,14 @@ export const createDevtoolsHistory = <Flags, Model, Message extends Tagged, Comm
   let disposed = false
   const initialRuntime = options.runtime.snapshot()
   const initialEncoded = codecs.encodeModel(liveModel)
+  let resourceOrdinal = 0
+  const takeResourceChanges = (sequence: number): ReadonlyArray<ManagedResourceEvent> => {
+    const changes = (options.managedResourceEvents?.() ?? []).filter(
+      (event) => event.ordinal > resourceOrdinal && event.causedBySequence <= sequence,
+    )
+    resourceOrdinal = Math.max(resourceOrdinal, ...changes.map((event) => event.ordinal), 0)
+    return changes
+  }
   const records: Array<DevtoolsEventRecord> = [
     {
       program: options.program.identity,
@@ -72,6 +84,7 @@ export const createDevtoolsHistory = <Flags, Model, Message extends Tagged, Comm
       modelAfter: initialEncoded,
       modelAfterFingerprint: fingerprint(json(initialEncoded)),
       commands: [],
+      resourceChanges: takeResourceChanges(0),
       updateDurationMicros: 0,
       snapshot: true,
     },
@@ -113,6 +126,7 @@ export const createDevtoolsHistory = <Flags, Model, Message extends Tagged, Comm
         commands: transition.commands.map((command) => ({
           description: codecs.encodeCommand(command),
         })),
+        resourceChanges: takeResourceChanges(runtimeSnapshot.sequence),
         updateDurationMicros: transition.updateDurationMilliseconds * 1_000,
         snapshot: runtimeSnapshot.sequence % snapshotInterval === 0,
       })
@@ -195,16 +209,26 @@ export const createDevtoolsHistory = <Flags, Model, Message extends Tagged, Comm
           ...command,
           description: redactValue(command.description, options.sensitivePaths ?? []),
         }))
+        const resourceChanges = redactValue(
+          record.resourceChanges,
+          options.sensitivePaths ?? [],
+        ) as typeof record.resourceChanges
         return {
           ...record,
           modelAfter,
           commands,
+          resourceChanges,
           ...(record.message === undefined ? {} : { message }),
           modelBeforeFingerprint: `redacted-v1:${record.modelBeforeFingerprint}`,
           modelAfterFingerprint: `redacted-v1:${fingerprint(json(modelAfter))}`,
         }
       }),
     }),
+    resources: () =>
+      redactValue(
+        options.managedResources?.() ?? [],
+        options.sensitivePaths ?? [],
+      ) as ReadonlyArray<RecordedResourceState>,
     dispose: () => {
       disposed = true
       runtimeUnsubscribe()
