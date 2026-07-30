@@ -5,6 +5,7 @@ const root = resolve(import.meta.dirname, '..')
 const sourceRoots = [
   resolve(root, 'packages/spike-core/src'),
   resolve(root, 'packages/runtime/src'),
+  resolve(root, 'packages/location/src'),
   resolve(root, 'packages/spike-trace/src'),
   resolve(root, 'packages/todo/src'),
   resolve(root, 'packages/story/src'),
