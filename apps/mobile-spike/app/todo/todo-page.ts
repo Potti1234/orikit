@@ -13,9 +13,9 @@ import {
   type TextField,
   type View,
 } from '@nativescript/core'
+import type { DevtoolsMode } from '@orikit/devtools-protocol'
 import { applyKeyedValues, reconcileKeyedValues } from '@orikit/renderer-nativescript'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
-import type { DevtoolsMode } from '@orikit/devtools-protocol'
 import {
   createInMemoryTodoStorage,
   createTodoApplication,
@@ -25,8 +25,9 @@ import {
   type TodoMessage,
   type TodoModel,
 } from '@orikit/todo'
-import { patchTextFieldText } from './native-text-field.android'
 import { connectTodoDevtools, type TodoDevtoolsClient } from './devtools-client'
+import { androidMotionSubscription } from './motion-subscription'
+import { patchTextFieldText } from './native-text-field.android'
 import { describeTodoNativeView, type TodoNativeRow, type TodoNativeView } from './native-view'
 
 let application: TodoApplication | undefined
@@ -76,6 +77,10 @@ const render = (page: Page, model: TodoModel, mode: DevtoolsMode = { _tag: 'Live
 
   requireView<Label>(page, 'title').text = description.title
   requireView<Label>(page, 'summary').text = description.summary
+  requireView<Label>(page, 'motionStatus').text =
+    model.motionSamples === 0
+      ? 'Motion sensor waiting for a sample'
+      : `Motion · ${model.lastMotion.toFixed(2)} m/s² · ${model.motionSamples} samples`
 
   const draft = requireView<TextField>(page, 'draft')
   patchTextFieldText(draft, description.draft)
@@ -153,6 +158,7 @@ const logEvidence = async (todoApplication: TodoApplication): Promise<void> => {
       branchId: runtimeSnapshot.branchId,
       sequence: runtimeSnapshot.sequence,
       runtimeMetrics: todoApplication.metrics(),
+      managedResources: todoApplication.managedResources(),
     })}`,
   )
 }
@@ -196,7 +202,11 @@ export function onNavigatingTo(args: NavigatedData): void {
   const storage = createInMemoryTodoStorage([
     { id: 'todo-1', title: 'Try the shared Todo program', completed: false },
   ])
-  application = createTodoApplication({ storage, devtools: { enabled: true } })
+  application = createTodoApplication({
+    storage,
+    devtools: { enabled: true },
+    subscriptions: [androidMotionSubscription()],
+  })
   application.reportLifecycle('Launched')
   application.reportLifecycle('BecameActive')
   devtoolsClient = connectTodoDevtools(application, (status) => {
@@ -204,7 +214,9 @@ export function onNavigatingTo(args: NavigatedData): void {
     if (statusLabel !== undefined) statusLabel.text = status
   })
   attachLifecycle()
-  unsubscribe = application.subscribeInspection(({ visibleModel, mode }) => render(page, visibleModel, mode))
+  unsubscribe = application.subscribeInspection(({ visibleModel, mode }) =>
+    render(page, visibleModel, mode),
+  )
   void logEvidence(application)
 }
 

@@ -5,12 +5,17 @@ import {
 } from '@orikit/devtools-runtime'
 import {
   createProductionRuntime,
-  type ProductionRuntime,
+  type ManagedResourceEvent,
+  type ManagedResourceState,
+  type ManagedRuntime,
+  type ResourceDefinition,
   type RuntimeEvent,
   type RuntimeLifecycle,
   type RuntimeMetrics,
   type RuntimeSnapshot,
   type RuntimeStatus,
+  type SubscriptionDefinition,
+  withManagedResources,
 } from '@orikit/runtime'
 
 import { type TodoCommand, type TodoMessage, type TodoModel, todoProgram } from './program'
@@ -21,7 +26,7 @@ import {
   type TodoStorage,
 } from './storage'
 
-type Runtime = ProductionRuntime<TodoModel, TodoMessage, TodoCommand>
+type Runtime = ManagedRuntime<TodoModel, TodoMessage, TodoCommand>
 
 const cancelled = (): Error => {
   const error = new Error('Todo command was cancelled')
@@ -39,6 +44,8 @@ export type TodoApplication = Readonly<{
   status: () => RuntimeStatus
   events: () => ReadonlyArray<RuntimeEvent<TodoMessage, TodoCommand>>
   metrics: () => RuntimeMetrics
+  managedResources: () => ReadonlyArray<ManagedResourceState>
+  managedResourceEvents: () => ReadonlyArray<ManagedResourceEvent>
   reportLifecycle: (lifecycle: RuntimeLifecycle) => void
   settle: () => Promise<void>
   dispose: () => void
@@ -47,30 +54,41 @@ export type TodoApplication = Readonly<{
 export type TodoApplicationOptions = Readonly<{
   storage?: TodoStorage
   devtools?: Readonly<{ enabled: boolean; sensitivePaths?: ReadonlyArray<string> }>
+  subscriptions?: ReadonlyArray<SubscriptionDefinition<TodoModel, TodoMessage>>
+  resources?: ReadonlyArray<ResourceDefinition<TodoModel, TodoMessage, unknown>>
 }>
 
 export const createTodoApplication = (options: TodoApplicationOptions = {}): TodoApplication => {
   const storage = options.storage ?? createInMemoryTodoStorage()
-  const runtime: Runtime = createProductionRuntime({
-    program: todoProgram,
-    flags: {},
-    interpret: async (command, { signal }) => {
-      if (signal.aborted) {
-        throw cancelled()
-      }
-      const completion = await interpretTodoCommand(command, storage)
-      if (signal.aborted) {
-        throw cancelled()
-      }
-      return completion
+  const runtime: Runtime = withManagedResources(
+    createProductionRuntime({
+      program: todoProgram,
+      flags: {},
+      interpret: async (command, { signal }) => {
+        if (signal.aborted) throw cancelled()
+        const completion = await interpretTodoCommand(command, storage)
+        if (signal.aborted) throw cancelled()
+        return completion
+      },
+    }),
+    {
+      ...(options.subscriptions === undefined ? {} : { subscriptions: options.subscriptions }),
+      ...(options.resources === undefined ? {} : { resources: options.resources }),
     },
-  })
+  )
   const devtools =
     options.devtools?.enabled === true
       ? createDevtoolsHistory({
           program: todoProgram,
           runtime,
-          sensitivePaths: options.devtools.sensitivePaths ?? ['draft', 'value', 'editor.draft'],
+          sensitivePaths: options.devtools.sensitivePaths ?? [
+            'draft',
+            'value',
+            'editor.draft',
+            'key',
+          ],
+          managedResources: runtime.managedResources,
+          managedResourceEvents: runtime.managedResourceEvents,
         })
       : undefined
 
@@ -99,6 +117,8 @@ export const createTodoApplication = (options: TodoApplicationOptions = {}): Tod
     status: runtime.status,
     events: runtime.events,
     metrics: runtime.metrics,
+    managedResources: runtime.managedResources,
+    managedResourceEvents: runtime.managedResourceEvents,
     reportLifecycle: runtime.reportLifecycle,
     settle: runtime.settle,
     dispose: () => {

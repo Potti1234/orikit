@@ -11,6 +11,7 @@ import {
   editRequested,
   initialTodoModel,
   interpretTodoCommand,
+  motionObserved,
   saveRetried,
   todosLoaded,
   todosSaved,
@@ -48,6 +49,12 @@ describe('Todo Program', () => {
     expect(retried[0].todos).toEqual([milk])
     expect(retried[0].saveState).toEqual({ _tag: 'Saving' })
     expect(retried[1]).toEqual([{ _tag: 'SaveTodos', todos: [milk] }])
+  })
+
+  it('keeps native motion samples in the portable Model', () => {
+    const model = updateTodo(initialTodoModel(), motionObserved(9.81))[0]
+    expect(model.motionSamples).toBe(1)
+    expect(model.lastMotion).toBe(9.81)
   })
 })
 

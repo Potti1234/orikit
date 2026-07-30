@@ -1,6 +1,6 @@
 <Page class="todo-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
     <ActionBar class="todo-bar" title="Today" />
-    <GridLayout rows="auto,auto,auto,auto,auto,*" class="todo-screen" accessibilityLabel="Today tasks">
+    <GridLayout rows="auto,auto,auto,auto,auto,auto,*" class="todo-screen" accessibilityLabel="Today tasks">
         <StackLayout row="0" class="todo-heading">
             <GridLayout id="inspectionBanner" columns="*,auto" class="inspection-banner" visibility="collapsed">
                 <Label id="inspectionStatus" col="0" text="Inspecting history" verticalAlignment="center" />
@@ -53,9 +53,11 @@
             <Button row="1" col="2" class="primary-button" text="Save" tap="onCommitEdit" accessibilityLabel="Save edited task" />
         </GridLayout>
 
-        <Button row="4" class="capability-link" text="Try native location" tap="onOpenLocation" accessibilityLabel="Open location capability" />
+        <Label id="motionStatus" row="4" class="devtools-status" text="Motion sensor waiting for a sample" textWrap="true" accessibilityLabel="Accelerometer status" />
 
-        <GridLayout row="5">
+        <Button row="5" class="capability-link" text="Try native location" tap="onOpenLocation" accessibilityLabel="Open location capability" />
+
+        <GridLayout row="6">
             <Label
                 id="empty"
                 class="empty-state"

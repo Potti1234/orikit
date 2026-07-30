@@ -33,6 +33,8 @@ export const TodoModel = Schema.Struct({
   loadState: Schema.Union([Loading, Ready, Failed]),
   saveState: Schema.Union([Idle, Saving, Failed]),
   editor: Schema.Union([EditorClosed, EditorEditing]),
+  motionSamples: Schema.Natural,
+  lastMotion: Schema.Number,
 })
 export type TodoModel = typeof TodoModel.Type
 
@@ -49,6 +51,7 @@ const ToggleRequested = Schema.TaggedStruct('ToggleRequested', { id: Schema.Stri
 const DeleteRequested = Schema.TaggedStruct('DeleteRequested', { id: Schema.String })
 const LoadRequested = Schema.TaggedStruct('LoadRequested', {})
 const SaveRetried = Schema.TaggedStruct('SaveRetried', {})
+const MotionObserved = Schema.TaggedStruct('MotionObserved', { magnitude: Schema.Number })
 export const TodosLoaded = Schema.TaggedStruct('TodosLoaded', {
   todos: Schema.Array(Todo),
 })
@@ -79,6 +82,7 @@ export const TodoMessage = Schema.Union([
   TodosLoadFailed,
   TodosSaved,
   TodosSaveFailed,
+  MotionObserved,
 ])
 export type TodoMessage = typeof TodoMessage.Type
 
@@ -103,6 +107,8 @@ export const toggleRequested = (id: string): TodoMessage => tagged('ToggleReques
 export const deleteRequested = (id: string): TodoMessage => tagged('DeleteRequested', { id })
 export const loadRequested = (): TodoMessage => tagged('LoadRequested')
 export const saveRetried = (): TodoMessage => tagged('SaveRetried')
+export const motionObserved = (magnitude: number): TodoMessage =>
+  tagged('MotionObserved', { magnitude })
 export const todosLoaded = (todos: ReadonlyArray<Todo>): TodosLoaded =>
   tagged('TodosLoaded', { todos })
 export const todosLoadFailed = (reason: string): TodosLoadFailed =>
@@ -118,6 +124,8 @@ export const initialTodoModel = (): TodoModel => ({
   loadState: { _tag: 'Loading' },
   saveState: { _tag: 'Idle' },
   editor: { _tag: 'Closed' },
+  motionSamples: 0,
+  lastMotion: 0,
 })
 
 const unchanged = (model: TodoModel): Transition<TodoModel, TodoCommand> => transition(model)
@@ -226,14 +234,20 @@ export const updateTodo = (
         ...model,
         saveState: { _tag: 'Failed', reason: message.reason },
       })
+    case 'MotionObserved':
+      return unchanged({
+        ...model,
+        motionSamples: model.motionSamples + 1,
+        lastMotion: message.magnitude,
+      })
   }
 }
 
 export const todoProgram = defineProgram<TodoFlags, TodoModel, TodoMessage, TodoCommand>({
   identity: {
     name: 'todo',
-    schemaVersion: 2,
-    buildVersion: '0.0.0-phase3',
+    schemaVersion: 3,
+    buildVersion: '0.0.0-phase8',
   },
   Flags: TodoFlags,
   Model: TodoModel,
