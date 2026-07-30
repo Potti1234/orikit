@@ -1,0 +1,36 @@
+{
+  "name": "orikit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Foldkit-compatible Elm architecture for web and native applications",
+  "license": "MIT",
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=26.4.0 <27",
+    "npm": ">=11 <12"
+  },
+  "scripts": {
+    "doctor:android": "ns doctor android",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "test": "pnpm --filter @orikit/spike-core --filter @orikit/runtime --filter @orikit/spike-trace --filter @orikit/todo --filter @orikit/story --filter @orikit/web-spike --filter @orikit/mobile-spike test",
+    "typecheck": "pnpm -r typecheck",
+    "verify:portable": "pnpm verify:portable:imports && pnpm typecheck && pnpm test",
+    "verify:portable:imports": "tsx tools/verify-portable-imports.mts",
+    "verify:web": "pnpm --filter @orikit/web-spike build",
+    "verify:android": "pnpm --filter @orikit/mobile-spike android:build",
+    "verify:android:device": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/feasibility/verify-android-device.ps1",
+    "verify:android:todo:device": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/phase3/verify-todo-android.ps1",
+    "verify:docs": "tsx tools/verify-docs.mts",
+    "evidence:node": "tsx tools/feasibility/run-node.mts",
+    "evidence:runtime": "tsx tools/phase4/run-runtime-benchmark.mts",
+    "verify:traces": "tsx tools/feasibility/compare-traces.mts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.6",
+    "nativescript": "9.0.6",
+    "tsx": "4.23.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

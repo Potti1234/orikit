@@ -1,0 +1,24 @@
+# Dependencies and package-manager state
+node_modules/
+
+# NativeScript generated output
+hooks/
+platforms/
+.ns-build-pid
+
+# Test and build output
+coverage/
+dist/
+artifacts/
+*.log
+
+# Editors and operating systems
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment
+.env
+.env.*
+!.env.example
+
