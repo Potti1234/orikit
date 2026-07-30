@@ -1,1 +1,102 @@
-# orikit
+# OriKit
+
+For the current implementation state and continuation commands, start with the
+[implementation handoff](HANDOFF.md).
+
+OriKit is an independent experiment that explores a Foldkit-compatible
+Elm architecture for web, Android, and iOS:
+
+```text
+event -> Message -> update(Model, Message) -> Model + Commands
+```
+
+The current recommended implementation is **TypeScript-first**:
+
+- Foldkit remains the web implementation.
+- A browser-independent TypeScript core owns Model, Message, update,
+  Commands, Subscriptions, Story tests, history, and replay.
+- NativeScript renders real Android and iOS controls.
+- Android-specific behavior can use TypeScript platform APIs or Kotlin/Java.
+- iOS-specific behavior can use TypeScript platform APIs or Swift/Objective-C.
+- A remote web inspector and MCP bridge expose the same logical runtime to
+  developers and AI agents.
+
+This does **not** mean that the current Foldkit DOM runtime can run unchanged
+inside NativeScript. OriKit must supply a portable runtime boundary and a
+NativeScript renderer. See the
+[NativeScript plan](docs/nativescript/README.md) for the complete specification.
+
+OriKit is not affiliated with, endorsed by, or maintained by Foldkit,
+NativeScript, JetBrains, Google, or Apple. Foldkit and NativeScript remain
+their respective projects.
+
+## Authoritative documentation
+
+Read the NativeScript plan in this order:
+
+1. [Documentation index](docs/nativescript/README.md)
+2. [Product definition](docs/nativescript/01-product-definition.md)
+3. [Architecture](docs/nativescript/02-architecture.md)
+4. [Portable core API](docs/nativescript/03-portable-core-api.md)
+5. [Native view and renderer](docs/nativescript/04-native-renderer.md)
+6. [Runtime, Commands, and resources](docs/nativescript/05-runtime-effects.md)
+7. [Platform integration](docs/nativescript/06-platform-integration.md)
+8. [Testing](docs/nativescript/07-testing.md)
+9. [DevTools, time travel, and MCP](docs/nativescript/08-devtools-time-travel.md)
+10. [AI workflow](docs/nativescript/09-ai-workflow.md)
+11. [Implementation roadmap](docs/nativescript/10-implementation-roadmap.md)
+12. [Verification](docs/nativescript/11-verification.md)
+13. [Risks and decisions](docs/nativescript/12-risks-decisions.md)
+14. [Agent runbook](docs/nativescript/13-agent-runbook.md)
+15. [Windows and Android setup](docs/nativescript/14-windows-android-setup.md)
+16. [iOS setup and verification](docs/nativescript/15-ios-setup.md)
+17. [Foldkit parity and examples](docs/nativescript/16-foldkit-parity-examples.md)
+18. [Feasibility spike](docs/nativescript/17-feasibility-spike.md)
+19. [Research references](docs/nativescript/18-references.md)
+20. [Implemented Phase 2 API](docs/nativescript/19-phase2-portable-api.md)
+21. [Phase 3 Todo evidence](docs/evidence/phase3-todo-vertical-slice.md)
+22. [Phase 4 runtime evidence](docs/evidence/phase4-production-runtime.md)
+
+## Previous KMP plan
+
+The original documents in [`docs/`](docs/) describe a Kotlin
+Multiplatform-first implementation. They are retained as fallback and research
+material. They are not the active implementation instructions unless an ADR
+explicitly reverses the NativeScript-first decision.
+
+## Current repository state
+
+Phase 1 contains a bounded Counter spike with a shared pure update, serialized
+history/runtime, a minimal web renderer, real Android controls, direct Android
+API access, and typed Kotlin interop. Node, Chromium, and Android produce
+byte-identical canonical traces. See the
+[Phase 1 evidence](docs/evidence/phase1-feasibility.md) and
+[ADR-0001](docs/adr/0001-nativescript-feasibility.md).
+
+Phase 2 now adds the portable Program, Command completion contracts, structural
+Story tests, canonical traces, and effect-free replay. See the
+[API guide](docs/nativescript/19-phase2-portable-api.md),
+[evidence](docs/evidence/phase2-portable-story.md), and
+[ADR-0002](docs/adr/0002-phase2-portable-contract.md).
+
+Phase 3 now promotes Todo into a web/Android vertical slice. One pure update
+serves a normal Foldkit web application and a vanilla NativeScript application
+with a real Android `EditText`, virtualized `ListView`, and native buttons.
+Both views cover load, add, edit, toggle, delete, failure, and retry semantics.
+See the [Phase 3 evidence](docs/evidence/phase3-todo-vertical-slice.md).
+
+The Phase 3 application originally used a bounded spike scheduler and still
+uses in-memory storage. Phase 4 replaces that history-observer scheduler with
+a portable production runtime that owns dispatch ordering, command identity,
+cancellation, stale-callback quarantine, lifecycle diagnostics, bounded
+events, metrics, and inspectable crash state. See the
+[Phase 4 evidence](docs/evidence/phase4-production-runtime.md).
+
+iOS remains unverified until the macOS/Xcode phase runs.
+
+`save.txt` preserves the earlier research and design discussion and must not be
+deleted or treated as normative documentation.
+
+## License
+
+OriKit is licensed under the [MIT License](LICENSE).
