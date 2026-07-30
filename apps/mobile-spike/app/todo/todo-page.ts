@@ -12,6 +12,7 @@ import {
   type TextField,
   type View,
 } from '@nativescript/core'
+import { applyKeyedValues, reconcileKeyedValues } from '@orikit/renderer-nativescript'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
 import {
   createInMemoryTodoStorage,
@@ -22,8 +23,7 @@ import {
   type TodoMessage,
   type TodoModel,
 } from '@orikit/todo'
-
-import { applyKeyedItems, reconcileKeyedItems } from './keyed-items'
+import { patchTextFieldText } from './native-text-field.android'
 import { describeTodoNativeView, type TodoNativeRow, type TodoNativeView } from './native-view'
 
 let application: TodoApplication | undefined
@@ -68,9 +68,7 @@ const render = (page: Page, model: TodoModel): void => {
   requireView<Label>(page, 'summary').text = description.summary
 
   const draft = requireView<TextField>(page, 'draft')
-  if (draft.text !== description.draft) {
-    draft.text = description.draft
-  }
+  patchTextFieldText(draft, description.draft)
 
   const feedback = requireView<StackLayout>(page, 'feedback')
   const feedbackText = requireView<Label>(page, 'feedbackText')
@@ -93,8 +91,8 @@ const render = (page: Page, model: TodoModel): void => {
   const list = requireView<ListView>(page, 'todos')
   list.visibility = visibility(!description.empty && description.load.state === 'ready')
 
-  const reconciled = reconcileKeyedItems([...rows], description.rows, sameRow)
-  applyKeyedItems(rows, reconciled)
+  const reconciled = reconcileKeyedValues([...rows], description.rows, sameRow)
+  applyKeyedValues(rows, reconciled)
   if (list.items !== rows) {
     list.items = rows
   }
@@ -103,9 +101,7 @@ const render = (page: Page, model: TodoModel): void => {
   const editDraft = requireView<TextField>(page, 'editDraft')
   editor.visibility = visibility(description.editor.state === 'editing')
   if (description.editor.state === 'editing') {
-    if (editDraft.text !== description.editor.draft) {
-      editDraft.text = description.editor.draft
-    }
+    patchTextFieldText(editDraft, description.editor.draft)
     if (editingId !== description.editor.id) {
       editingId = description.editor.id
       setTimeout(() => editDraft.focus(), 0)

@@ -13,6 +13,7 @@ import {
 
 export type TodoNativeRow = Readonly<{
   id: string
+  key: string
   title: string
   titleClass: string
   toggleText: string
@@ -88,6 +89,7 @@ export const describeTodoNativeView = (model: TodoModel): TodoNativeView => {
     empty: model.loadState._tag === 'Ready' && model.todos.length === 0,
     rows: model.todos.map((todo) => ({
       id: todo.id,
+      key: todo.id,
       title: todo.title,
       titleClass: todo.completed ? 'todo-title completed' : 'todo-title',
       toggleText: todo.completed ? '✓' : '○',

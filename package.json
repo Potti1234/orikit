@@ -13,7 +13,7 @@
     "doctor:android": "ns doctor android",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "test": "pnpm --filter @orikit/spike-core --filter @orikit/runtime --filter @orikit/location --filter @orikit/spike-trace --filter @orikit/todo --filter @orikit/story --filter @orikit/web-spike --filter @orikit/mobile-spike test",
+    "test": "pnpm --filter @orikit/spike-core --filter @orikit/runtime --filter @orikit/location --filter @orikit/renderer-nativescript --filter @orikit/spike-trace --filter @orikit/todo --filter @orikit/story --filter @orikit/web-spike --filter @orikit/mobile-spike test",
     "typecheck": "pnpm -r typecheck",
     "verify:portable": "pnpm verify:portable:imports && pnpm typecheck && pnpm test",
     "verify:portable:imports": "tsx tools/verify-portable-imports.mts",
@@ -24,6 +24,7 @@
     "verify:docs": "tsx tools/verify-docs.mts",
     "evidence:node": "tsx tools/feasibility/run-node.mts",
     "evidence:runtime": "tsx tools/phase4/run-runtime-benchmark.mts",
+    "evidence:renderer": "tsx tools/phase6/run-renderer-benchmark.mts",
     "verify:traces": "tsx tools/feasibility/compare-traces.mts"
   },
   "devDependencies": {
