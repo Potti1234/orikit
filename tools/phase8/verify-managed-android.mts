@@ -62,7 +62,7 @@ await waitFor(() => {
   const state = latestState()
   return state?._tag === 'RuntimeState' && state.info.mode._tag === 'Traveling' ? state : undefined
 })
-await new Promise((resolve) => setTimeout(resolve, 2_000))
+await new Promise((resolve) => setTimeout(resolve, 3_000))
 const duringTravel = await waitFor(() => {
   const state = latestState()
   return state?._tag === 'RuntimeState' && state.info.liveSequence > liveBefore ? state : undefined
