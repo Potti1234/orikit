@@ -7,8 +7,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "android:build": "ns build android --no-hmr",
-    "android:run": "ns run android --no-hmr"
+    "android:build": "ns build android --no-hmr --pnpm",
+    "android:run": "ns run android --no-hmr --pnpm"
   },
   "dependencies": {
     "@orikit/spike-core": "workspace:*",
