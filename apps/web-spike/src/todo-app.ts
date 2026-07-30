@@ -1,28 +1,22 @@
 import {
-  addRequested,
   createInMemoryTodoStorage,
-  deleteRequested,
   draftChanged,
-  editCancelled,
-  editCommitted,
   editDraftChanged,
-  editRequested,
   interpretTodoCommand,
-  loadRequested,
   loadTodos,
-  saveRetried,
+  presentTodo,
   saveTodos,
   Todo,
   type TodoCommand,
   type TodoMessage,
   type TodoModel as TodoModelType,
+  type TodoPresentation,
+  type TodoPresentationRow,
   TodosLoaded,
   TodosLoadFailed,
   TodosSaved,
   TodosSaveFailed,
-  type Todo as TodoType,
   todoProgram,
-  toggleRequested,
 } from '@orikit/todo'
 import { Effect, Schema } from 'effect'
 import { Command } from 'foldkit'
@@ -66,10 +60,14 @@ export const initTodoWeb = () => adapt(todoProgram.init({}))
 export const updateTodoWeb = (model: TodoModelType, message: TodoMessage) =>
   adapt(todoProgram.update(model, message))
 
-const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessage>): Html => {
-  const editing = model.editor._tag === 'Editing' && model.editor.id === todo.id
+const todoRow = (
+  todo: TodoPresentationRow,
+  presentation: TodoPresentation,
+  h: HtmlBuilder<TodoMessage>,
+): Html => {
+  const editing = presentation.editor.state === 'editing' && presentation.editor.id === todo.id
 
-  if (editing && model.editor._tag === 'Editing') {
+  if (editing && presentation.editor.state === 'editing') {
     return h.keyed('li')(
       todo.id,
       [h.Class('todo-row editing')],
@@ -81,7 +79,7 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
             h.input([
               h.Id(`edit-${todo.id}`),
               h.Type('text'),
-              h.Value(model.editor.draft),
+              h.Value(presentation.editor.draft),
               h.OnInput(editDraftChanged),
             ]),
           ],
@@ -93,13 +91,17 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
               [
                 h.Type('button'),
                 h.Class('text-button primary'),
-                h.OnClick(editCommitted()),
-                h.Disabled(model.editor.draft.trim().length === 0),
+                h.OnClick(presentation.editor.saveMessage),
+                h.Disabled(!presentation.editor.canSave),
               ],
               ['Save'],
             ),
             h.button(
-              [h.Type('button'), h.Class('text-button'), h.OnClick(editCancelled())],
+              [
+                h.Type('button'),
+                h.Class('text-button'),
+                h.OnClick(presentation.editor.cancelMessage),
+              ],
               ['Cancel'],
             ),
           ],
@@ -120,7 +122,7 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
         h.AriaLabel(
           todo.completed ? `Mark ${todo.title} incomplete` : `Mark ${todo.title} complete`,
         ),
-        h.OnClick(toggleRequested(todo.id)),
+        h.OnClick(todo.toggleMessage),
       ]),
       h.label([h.Class('todo-title'), h.For(`todo-${todo.id}`)], [todo.title]),
       h.div(
@@ -131,7 +133,7 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
               h.Type('button'),
               h.Class('text-button'),
               h.AriaLabel(`Edit ${todo.title}`),
-              h.OnClick(editRequested(todo.id)),
+              h.OnClick(todo.editMessage),
             ],
             ['Edit'],
           ),
@@ -140,7 +142,7 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
               h.Type('button'),
               h.Class('text-button destructive'),
               h.AriaLabel(`Delete ${todo.title}`),
-              h.OnClick(deleteRequested(todo.id)),
+              h.OnClick(todo.deleteMessage),
             ],
             ['Delete'],
           ),
@@ -150,8 +152,8 @@ const todoRow = (todo: TodoType, model: TodoModelType, h: HtmlBuilder<TodoMessag
   )
 }
 
-const content = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): Html => {
-  if (model.loadState._tag === 'Loading') {
+const content = (presentation: TodoPresentation, h: HtmlBuilder<TodoMessage>): Html => {
+  if (presentation.load.state === 'loading') {
     return h.div(
       [h.Class('loading-state'), h.Role('status'), h.AriaLive('polite')],
       [
@@ -162,21 +164,25 @@ const content = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): Html => {
     )
   }
 
-  if (model.loadState._tag === 'Failed') {
+  if (presentation.load.state === 'failed') {
     return h.section(
       [h.Class('inline-state failure'), h.Role('alert')],
       [
         h.h2([], ['Couldn’t load reminders']),
-        h.p([], [model.loadState.reason]),
+        h.p([], [presentation.load.detail]),
         h.button(
-          [h.Type('button'), h.Class('text-button primary'), h.OnClick(loadRequested())],
+          [
+            h.Type('button'),
+            h.Class('text-button primary'),
+            h.OnClick(presentation.load.retryMessage as TodoMessage),
+          ],
           ['Try again'],
         ),
       ],
     )
   }
 
-  if (model.todos.length === 0) {
+  if (presentation.empty) {
     return h.section(
       [h.Class('inline-state empty-state')],
       [
@@ -189,16 +195,15 @@ const content = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): Html => {
 
   return h.ul(
     [h.Class('todo-list'), h.AriaLabel('Reminders')],
-    model.todos.map((todo) => todoRow(todo, model, h)),
+    presentation.rows.map((todo) => todoRow(todo, presentation, h)),
   )
 }
 
 export const viewTodoWeb = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): Document => {
-  const open = model.todos.filter((todo) => !todo.completed).length
-  const completed = model.todos.length - open
+  const presentation = presentTodo(model)
 
   return {
-    title: `${open} open reminders · OriKit`,
+    title: `${presentation.openCount} open reminders · OriKit`,
     lang: 'en',
     body: h.main(
       [h.Class('todo-shell')],
@@ -213,11 +218,8 @@ export const viewTodoWeb = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): 
                 h.div(
                   [],
                   [
-                    h.h1([], ['Today']),
-                    h.p(
-                      [h.Class('summary'), h.AriaLive('polite')],
-                      [`${open} open · ${completed} completed`],
-                    ),
+                    h.h1([], [presentation.title]),
+                    h.p([h.Class('summary'), h.AriaLive('polite')], [presentation.summary]),
                   ],
                 ),
                 h.span([h.Class('platform-note')], ['Shared behavior · Web view']),
@@ -226,46 +228,43 @@ export const viewTodoWeb = (model: TodoModelType, h: HtmlBuilder<TodoMessage>): 
           ],
         ),
         h.form(
-          [h.Class('quick-add'), h.OnSubmit(addRequested())],
+          [h.Class('quick-add'), h.OnSubmit(presentation.addMessage)],
           [
             h.label([h.For('new-todo'), h.Class('visually-hidden')], ['New reminder']),
             h.input([
               h.Id('new-todo'),
               h.Type('text'),
-              h.Value(model.draft),
+              h.Value(presentation.draft),
               h.Placeholder('New reminder'),
               h.Autocomplete('off'),
               h.OnInput(draftChanged),
             ]),
             h.button(
-              [
-                h.Type('submit'),
-                h.Class('add-button'),
-                h.Disabled(model.draft.trim().length === 0),
-              ],
+              [h.Type('submit'), h.Class('add-button'), h.Disabled(!presentation.canAdd)],
               ['Add'],
             ),
           ],
         ),
-        model.saveState._tag === 'Failed'
+        presentation.save.state === 'failed'
           ? h.section(
               [h.Class('save-status failure'), h.Role('alert')],
               [
-                h.p(
-                  [],
-                  [`Changes are on this device, but saving failed: ${model.saveState.reason}`],
-                ),
+                h.p([], [presentation.save.detail]),
                 h.button(
-                  [h.Type('button'), h.Class('text-button primary'), h.OnClick(saveRetried())],
+                  [
+                    h.Type('button'),
+                    h.Class('text-button primary'),
+                    h.OnClick(presentation.save.retryMessage as TodoMessage),
+                  ],
                   ['Retry saving'],
                 ),
               ],
             )
           : h.p(
               [h.Class('save-status'), h.Role('status'), h.AriaLive('polite')],
-              [model.saveState._tag === 'Saving' ? 'Saving…' : 'Saved in memory'],
+              [presentation.save.state === 'saving' ? presentation.save.detail : 'Saved in memory'],
             ),
-        content(model, h),
+        content(presentation, h),
         h.footer([], [h.p([], ['One Program. Separate platform views.'])]),
       ],
     ),

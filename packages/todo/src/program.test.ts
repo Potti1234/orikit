@@ -12,6 +12,7 @@ import {
   initialTodoModel,
   interpretTodoCommand,
   motionObserved,
+  presentTodo,
   saveRetried,
   todosLoaded,
   todosSaved,
@@ -55,6 +56,26 @@ describe('Todo Program', () => {
     const model = updateTodo(initialTodoModel(), motionObserved(9.81))[0]
     expect(model.motionSamples).toBe(1)
     expect(model.lastMotion).toBe(9.81)
+  })
+
+  it('projects shared behavior and accessibility semantics without platform imports', () => {
+    const model = updateTodo(initialTodoModel(), todosLoaded([milk]))[0]
+    const view = presentTodo(model)
+    expect(view).toMatchObject({
+      title: 'Today',
+      openCount: 1,
+      completedCount: 0,
+      canAdd: false,
+      rows: [
+        {
+          id: 'milk',
+          toggleLabel: 'Mark complete: Buy milk',
+          editLabel: 'Edit: Buy milk',
+          deleteLabel: 'Delete: Buy milk',
+        },
+      ],
+    })
+    expect(view.rows[0]?.toggleMessage).toEqual(toggleRequested('milk'))
   })
 })
 
