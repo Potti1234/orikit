@@ -1,8 +1,5 @@
 # OriKit
 
-For the current implementation state and continuation commands, start with the
-[implementation handoff](HANDOFF.md).
-
 OriKit is an independent experiment that explores a Foldkit-compatible
 Elm architecture for web, Android, and iOS:
 

@@ -1,8 +1,5 @@
 # NativeScript-first implementation documentation
 
-For the current implementation state and exact continuation commands, read the
-[complete handoff](../../HANDOFF.md) first.
-
 ## Status
 
 This directory is the authoritative OriKit implementation plan.
