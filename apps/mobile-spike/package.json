@@ -1,0 +1,29 @@
+{
+  "name": "@orikit/mobile-spike",
+  "main": "app/app.ts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "android:build": "ns build android --no-hmr",
+    "android:run": "ns run android --no-hmr"
+  },
+  "dependencies": {
+    "@orikit/spike-core": "workspace:*",
+    "@orikit/spike-trace": "workspace:*",
+    "@orikit/todo": "workspace:*",
+    "@nativescript/core": "9.0.20",
+    "@nativescript/theme": "3.1.0"
+  },
+  "devDependencies": {
+    "@nativescript/android": "9.0.5",
+    "@nativescript/types": "9.0.0",
+    "@nativescript/types-android": "9.0.0",
+    "@nativescript/types-ios": "9.0.0",
+    "@nativescript/webpack": "5.0.38",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

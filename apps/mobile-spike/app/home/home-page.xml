@@ -1,0 +1,28 @@
+<Page class="app-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
+    <ActionBar class="app-bar" title="OriKit spike" />
+    <ScrollView>
+        <StackLayout class="screen" accessibilityLabel="OriKit feasibility spike">
+            <Label class="eyebrow" text="ONE PURE UPDATE · NATIVE ANDROID UI" />
+            <Label class="title" text="OriKit counter" textWrap="true" />
+            <Label id="mode" class="mode" text="LIVE" accessibilityLabel="Runtime mode live" />
+            <Label id="count" class="count" text="0" accessibilityLabel="Counter value 0" />
+
+            <GridLayout columns="*,*" rows="auto,auto" class="controls">
+                <Button id="decrement" col="0" row="0" text="− Decrement" tap="onDecrement" accessibilityLabel="Decrement counter" />
+                <Button id="increment" col="1" row="0" text="+ Increment" tap="onIncrement" accessibilityLabel="Increment counter" />
+                <Button id="reset" colSpan="2" row="1" text="Reset" tap="onReset" accessibilityLabel="Reset counter" />
+            </GridLayout>
+
+            <Button id="resume" class="resume" text="Resume live state" tap="onResume" visibility="collapsed" accessibilityLabel="Resume live state" />
+
+            <Label class="section-title" text="HISTORY · TAP TO TIME TRAVEL" />
+            <StackLayout id="history" class="history" accessibilityLabel="Runtime history" />
+
+            <Label class="section-title" text="PLATFORM EVIDENCE" />
+            <Label id="device" class="evidence" text="Android API: loading…" textWrap="true" />
+            <Label id="greeting" class="evidence" text="Kotlin: loading…" textWrap="true" />
+            <Label id="effect" class="evidence" text="Effect checks: running…" textWrap="true" />
+            <Label id="trace" class="evidence" text="Canonical trace: preparing…" textWrap="true" />
+        </StackLayout>
+    </ScrollView>
+</Page>

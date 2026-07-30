@@ -1,0 +1,187 @@
+@import "@nativescript/theme/css/core.css";
+@import "@nativescript/theme/css/default.css";
+
+.todo-page {
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.todo-bar {
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.todo-screen {
+  padding: 16 16 0;
+}
+
+.todo-heading {
+  padding: 12 4 18;
+}
+
+.todo-heading-title {
+  font-size: 34;
+  font-weight: 700;
+}
+
+.todo-summary {
+  margin-top: 4;
+  color: #6e6e73;
+  font-size: 15;
+}
+
+.composer {
+  margin-bottom: 12;
+  border-width: 1;
+  border-color: #d2d2d7;
+  border-radius: 12;
+  background-color: white;
+}
+
+.composer-field,
+.editor-field {
+  min-height: 48;
+  padding: 0 12;
+  border-width: 0;
+  background-color: transparent;
+  color: #1d1d1f;
+  font-size: 16;
+}
+
+.primary-button,
+.quiet-button,
+.row-action,
+.toggle-button {
+  min-height: 44;
+  border-width: 0;
+  border-radius: 10;
+  background-color: transparent;
+  color: #007aff;
+  font-size: 14;
+}
+
+.primary-button {
+  margin: 4;
+  padding: 0 16;
+  background-color: #007aff;
+  color: white;
+  font-weight: 600;
+}
+
+.feedback,
+.editor {
+  margin-bottom: 12;
+  padding: 12;
+  border-radius: 12;
+  background-color: white;
+}
+
+.feedback-text {
+  color: #6e6e73;
+  font-size: 14;
+}
+
+.todo-list {
+  background-color: white;
+  border-radius: 12;
+}
+
+.todo-row {
+  min-height: 58;
+  padding: 4 6;
+  background-color: white;
+}
+
+.todo-title {
+  padding: 8 4;
+  color: #1d1d1f;
+  font-size: 16;
+}
+
+.todo-title.completed {
+  color: #8e8e93;
+  text-decoration: line-through;
+}
+
+.toggle-button {
+  font-size: 24;
+}
+
+.row-action {
+  padding: 0 8;
+}
+
+.row-action.destructive {
+  color: #ff3b30;
+}
+
+.empty-state {
+  padding: 48 24;
+  color: #6e6e73;
+  font-size: 16;
+  text-align: center;
+}
+
+.app-page {
+  background-color: #eff4ed;
+  color: #17211b;
+}
+
+.app-bar {
+  background-color: #30673f;
+  color: white;
+}
+
+.screen {
+  padding: 24;
+}
+
+.eyebrow,
+.mode,
+.section-title {
+  color: #477151;
+  font-size: 11;
+  font-weight: bold;
+  letter-spacing: 0.12;
+}
+
+.title {
+  margin-top: 8;
+  font-size: 32;
+  font-weight: bold;
+}
+
+.mode {
+  margin-top: 24;
+}
+
+.count {
+  margin: 4 0 16;
+  font-size: 72;
+  font-weight: bold;
+}
+
+.controls Button,
+.resume,
+.history-button {
+  margin: 4;
+  border-radius: 10;
+  background-color: #f7faf6;
+  color: #17211b;
+}
+
+.resume,
+.selected {
+  background-color: #30673f;
+  color: white;
+}
+
+.section-title {
+  margin: 24 4 8;
+}
+
+.evidence {
+  margin: 4;
+  color: #526158;
+  font-size: 13;
+}
