@@ -43,8 +43,8 @@ describe('shared Android/iOS native tree', () => {
 
   it('maps one custom semantic adapter to Kotlin and Swift implementations', () => {
     const mappings: Record<NativeMobilePlatform, string> = {
-      Android: androidTodoTheme.motionAdapter.nativeClass,
-      IOS: iosTodoTheme.motionAdapter.nativeClass,
+      Android: androidTodoTheme.motionAdapter.proposedNativeClass,
+      IOS: iosTodoTheme.motionAdapter.proposedNativeClass,
     }
     expect(androidTodoTheme.motionAdapter.adapter).toBe('MotionSummary')
     expect(iosTodoTheme.motionAdapter.adapter).toBe('MotionSummary')

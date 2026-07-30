@@ -13,7 +13,7 @@ export type TodoNativeTheme = Readonly<{
   motionAdapter: Readonly<{
     adapter: 'MotionSummary'
     implementation: 'Kotlin' | 'Swift'
-    nativeClass: string
+    proposedNativeClass: string
   }>
 }>
 
@@ -27,7 +27,7 @@ export const androidTodoTheme: TodoNativeTheme = {
   motionAdapter: {
     adapter: 'MotionSummary',
     implementation: 'Kotlin',
-    nativeClass: 'dev.orikit.device.MotionSummaryView',
+    proposedNativeClass: 'dev.orikit.device.MotionSummaryView',
   },
 }
 
@@ -41,7 +41,7 @@ export const iosTodoTheme: TodoNativeTheme = {
   motionAdapter: {
     adapter: 'MotionSummary',
     implementation: 'Swift',
-    nativeClass: 'OriKitMotionSummaryView',
+    proposedNativeClass: 'OriKitMotionSummaryView',
   },
 }
 
