@@ -56,6 +56,7 @@ Read the NativeScript plan in this order:
 20. [Implemented Phase 2 API](docs/nativescript/19-phase2-portable-api.md)
 21. [Phase 3 Todo evidence](docs/evidence/phase3-todo-vertical-slice.md)
 22. [Phase 4 runtime evidence](docs/evidence/phase4-production-runtime.md)
+23. [Phase 5 native location evidence](docs/evidence/phase5-native-location.md)
 
 ## Previous KMP plan
 
@@ -96,6 +97,13 @@ Phase 4 is verified on a physical Samsung SM-G781B running Android 13. The
 device verifier confirms native controls, the complete Todo interaction flow,
 focus and row-recycling correctness, canonical trace parity, and a running
 production runtime.
+
+Phase 5 adds a portable location capability with explicit permission and
+failure states, a deterministic fake, cancellable Android callbacks, and a
+narrow typed Kotlin classifier for permanent permission denial. The native
+screen and lifecycle behavior are verified on the same physical Samsung. See
+the [Phase 5 evidence](docs/evidence/phase5-native-location.md) and
+[ADR-0004](docs/adr/0004-android-location-capability.md).
 
 iOS remains unverified until the macOS/Xcode phase runs.
 

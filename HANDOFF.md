@@ -3,6 +3,11 @@
 Last updated: 2026-07-30  
 Development platform: Windows 11 and Android  
 
+Current milestone: Phase 5 native location capability is implemented and
+verified on a physical Android device. Continue with Phase 6 renderer
+architecture after reviewing `docs/evidence/phase5-native-location.md` and
+`docs/adr/0004-android-location-capability.md`.
+
 ## 1. Read this first
 
 This is the continuity document for resuming OriKit development. Clone the Git
