@@ -3,6 +3,7 @@ import {
   type Button,
   type EventData,
   Frame,
+  type GridLayout,
   type Label,
   type ListView,
   type NavigatedData,
@@ -14,6 +15,7 @@ import {
 } from '@nativescript/core'
 import { applyKeyedValues, reconcileKeyedValues } from '@orikit/renderer-nativescript'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
+import type { DevtoolsMode } from '@orikit/devtools-protocol'
 import {
   createInMemoryTodoStorage,
   createTodoApplication,
@@ -24,6 +26,7 @@ import {
   type TodoModel,
 } from '@orikit/todo'
 import { patchTextFieldText } from './native-text-field.android'
+import { connectTodoDevtools, type TodoDevtoolsClient } from './devtools-client'
 import { describeTodoNativeView, type TodoNativeRow, type TodoNativeView } from './native-view'
 
 let application: TodoApplication | undefined
@@ -33,6 +36,7 @@ let rows = new ObservableArray<TodoNativeRow>([])
 let editingId: string | undefined
 const renderDurations: Array<number> = []
 let lifecycleAttached = false
+let devtoolsClient: TodoDevtoolsClient | undefined
 
 const now = (): number => globalThis.performance?.now() ?? Date.now()
 
@@ -59,10 +63,16 @@ const sameRow = (left: TodoNativeRow, right: TodoNativeRow): boolean =>
   left.titleClass === right.titleClass &&
   left.toggleText === right.toggleText
 
-const render = (page: Page, model: TodoModel): void => {
+const render = (page: Page, model: TodoModel, mode: DevtoolsMode = { _tag: 'Live' }): void => {
   const started = now()
   const description = describeTodoNativeView(model)
   currentView = description
+
+  const traveling = mode._tag === 'Traveling'
+  requireView<GridLayout>(page, 'inspectionBanner').visibility = visibility(traveling)
+  requireView<Label>(page, 'inspectionStatus').text = traveling
+    ? `Inspecting event ${mode.sequence} · live processing continues`
+    : 'Live'
 
   requireView<Label>(page, 'title').text = description.title
   requireView<Label>(page, 'summary').text = description.summary
@@ -186,11 +196,15 @@ export function onNavigatingTo(args: NavigatedData): void {
   const storage = createInMemoryTodoStorage([
     { id: 'todo-1', title: 'Try the shared Todo program', completed: false },
   ])
-  application = createTodoApplication({ storage })
+  application = createTodoApplication({ storage, devtools: { enabled: true } })
   application.reportLifecycle('Launched')
   application.reportLifecycle('BecameActive')
+  devtoolsClient = connectTodoDevtools(application, (status) => {
+    const statusLabel = page.getViewById<Label>('devtoolsStatus')
+    if (statusLabel !== undefined) statusLabel.text = status
+  })
   attachLifecycle()
-  unsubscribe = application.subscribe((model) => render(page, model))
+  unsubscribe = application.subscribeInspection(({ visibleModel, mode }) => render(page, visibleModel, mode))
   void logEvidence(application)
 }
 
@@ -253,6 +267,10 @@ export function onOpenLocation(_args: EventData): void {
   Frame.topmost().navigate('location/location-page')
 }
 
+export function onResumeLive(_args: EventData): void {
+  application?.devtools()?.resumeLive()
+}
+
 export function onUnloaded(): void {
   application?.reportLifecycle('Terminating')
   detachLifecycle()
@@ -265,8 +283,10 @@ export function onUnloaded(): void {
     )
   }
   unsubscribe?.()
+  devtoolsClient?.dispose()
   application?.dispose()
   unsubscribe = undefined
+  devtoolsClient = undefined
   application = undefined
   currentView = undefined
   editingId = undefined

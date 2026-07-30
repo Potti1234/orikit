@@ -14,6 +14,7 @@
     "@orikit/spike-core": "workspace:*",
     "@orikit/spike-trace": "workspace:*",
     "@orikit/location": "workspace:*",
+    "@orikit/devtools-protocol": "workspace:*",
     "@orikit/renderer-nativescript": "workspace:*",
     "@orikit/todo": "workspace:*",
     "@nativescript/core": "9.0.20",

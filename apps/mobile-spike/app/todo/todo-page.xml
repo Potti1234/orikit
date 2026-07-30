@@ -2,6 +2,11 @@
     <ActionBar class="todo-bar" title="Today" />
     <GridLayout rows="auto,auto,auto,auto,auto,*" class="todo-screen" accessibilityLabel="Today tasks">
         <StackLayout row="0" class="todo-heading">
+            <GridLayout id="inspectionBanner" columns="*,auto" class="inspection-banner" visibility="collapsed">
+                <Label id="inspectionStatus" col="0" text="Inspecting history" verticalAlignment="center" />
+                <Button col="1" class="quiet-button" text="Resume live" tap="onResumeLive" accessibilityLabel="Resume live application" />
+            </GridLayout>
+            <Label id="devtoolsStatus" class="devtools-status" text="Inspector disabled" textWrap="true" />
             <Label id="title" class="todo-heading-title" text="Today" />
             <Label id="summary" class="todo-summary" text="Loading your tasks…" textWrap="true" />
         </StackLayout>

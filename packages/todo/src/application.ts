@@ -1,4 +1,9 @@
 import {
+  createDevtoolsHistory,
+  type DevtoolsHistory,
+  type DevtoolsSnapshot,
+} from '@orikit/devtools-runtime'
+import {
   createProductionRuntime,
   type ProductionRuntime,
   type RuntimeEvent,
@@ -29,6 +34,8 @@ export type TodoApplication = Readonly<{
   current: () => TodoModel
   snapshot: () => RuntimeSnapshot<TodoModel, TodoCommand>
   subscribe: (observer: (model: TodoModel) => void) => () => void
+  subscribeInspection: (observer: (snapshot: DevtoolsSnapshot<TodoModel>) => void) => () => void
+  devtools: () => DevtoolsHistory<TodoModel> | undefined
   status: () => RuntimeStatus
   events: () => ReadonlyArray<RuntimeEvent<TodoMessage, TodoCommand>>
   metrics: () => RuntimeMetrics
@@ -39,6 +46,7 @@ export type TodoApplication = Readonly<{
 
 export type TodoApplicationOptions = Readonly<{
   storage?: TodoStorage
+  devtools?: Readonly<{ enabled: boolean; sensitivePaths?: ReadonlyArray<string> }>
 }>
 
 export const createTodoApplication = (options: TodoApplicationOptions = {}): TodoApplication => {
@@ -57,18 +65,46 @@ export const createTodoApplication = (options: TodoApplicationOptions = {}): Tod
       return completion
     },
   })
+  const devtools =
+    options.devtools?.enabled === true
+      ? createDevtoolsHistory({
+          program: todoProgram,
+          runtime,
+          sensitivePaths: options.devtools.sensitivePaths ?? ['draft', 'value', 'editor.draft'],
+        })
+      : undefined
 
   return {
-    dispatch: (message) => runtime.dispatch(message),
-    current: runtime.current,
+    dispatch: (message) => {
+      if (devtools?.snapshot().mode._tag !== 'Traveling') runtime.dispatch(message)
+    },
+    current: () => devtools?.snapshot().visibleModel ?? runtime.current(),
     snapshot: runtime.snapshot,
-    subscribe: (observer) => runtime.subscribe(({ model }) => observer(model)),
+    subscribe: (observer) =>
+      devtools === undefined
+        ? runtime.subscribe(({ model }) => observer(model))
+        : devtools.subscribe(({ visibleModel }) => observer(visibleModel)),
+    subscribeInspection: (observer) =>
+      devtools === undefined
+        ? runtime.subscribe(({ model, sequence }) =>
+            observer({
+              liveModel: model,
+              visibleModel: model,
+              liveSequence: sequence,
+              mode: { _tag: 'Live' },
+            }),
+          )
+        : devtools.subscribe(observer),
+    devtools: () => devtools,
     status: runtime.status,
     events: runtime.events,
     metrics: runtime.metrics,
     reportLifecycle: runtime.reportLifecycle,
     settle: runtime.settle,
-    dispose: runtime.dispose,
+    dispose: () => {
+      devtools?.dispose()
+      runtime.dispose()
+    },
   }
 }
 
