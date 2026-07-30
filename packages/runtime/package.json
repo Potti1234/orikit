@@ -1,0 +1,22 @@
+{
+  "name": "@orikit/runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orikit/spike-core": "workspace:*"
+  },
+  "devDependencies": {
+    "effect": "4.0.0-beta.102",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}
