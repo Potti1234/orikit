@@ -1,0 +1,25 @@
+{
+  "name": "@orikit/story",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./examples": "./src/examples/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orikit/spike-core": "workspace:*",
+    "@orikit/spike-trace": "workspace:*",
+    "@orikit/todo": "workspace:*",
+    "effect": "4.0.0-beta.102"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}
