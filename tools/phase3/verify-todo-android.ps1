@@ -83,6 +83,19 @@ function Save-Screenshot {
   Invoke-Adb pull $devicePath (Join-Path $artifacts "$Name.png") | Out-Null
 }
 
+function Wait-ApplicationFocus {
+  for ($attempt = 0; $attempt -lt 10; $attempt += 1) {
+    $windowState = @(Invoke-Adb shell dumpsys window) -join "`n"
+    if ($windowState -match "mCurrentFocus=.*$([regex]::Escape($applicationId))") {
+      return
+    }
+    Invoke-Adb shell input keyevent KEYCODE_BACK | Out-Null
+    Invoke-Adb shell am start '-W' '-n' $activity | Out-Null
+    Start-Sleep -Milliseconds 500
+  }
+  throw "Android application did not retain foreground focus"
+}
+
 Push-Location $workspace
 try {
   & pnpm verify:android
@@ -126,6 +139,8 @@ try {
   if ($rawLogText -notmatch 'ORIKIT_TODO_READY:.*"sessionId":"session-\d+".*"branchId":"branch-1"') {
     throw 'Android Todo did not report valid session and branch identity'
   }
+
+  Wait-ApplicationFocus
 
   $initial = Get-Hierarchy 'android-todo-initial'
   foreach ($required in @(
