@@ -1,3 +1,17 @@
+import {
+  Application,
+  type Button,
+  type EventData,
+  Frame,
+  type Label,
+  type ListView,
+  type NavigatedData,
+  ObservableArray,
+  type Page,
+  type StackLayout,
+  type TextField,
+  type View,
+} from '@nativescript/core'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
 import {
   createInMemoryTodoStorage,
@@ -8,19 +22,6 @@ import {
   type TodoMessage,
   type TodoModel,
 } from '@orikit/todo'
-import {
-  Application,
-  type Button,
-  type EventData,
-  type Label,
-  type ListView,
-  type NavigatedData,
-  ObservableArray,
-  type Page,
-  type StackLayout,
-  type TextField,
-  type View,
-} from '@nativescript/core'
 
 import { applyKeyedItems, reconcileKeyedItems } from './keyed-items'
 import { describeTodoNativeView, type TodoNativeRow, type TodoNativeView } from './native-view'
@@ -250,6 +251,10 @@ export function onRetry(_args: EventData): void {
   if (message !== undefined) {
     requireApplication().dispatch(message)
   }
+}
+
+export function onOpenLocation(_args: EventData): void {
+  Frame.topmost().navigate('location/location-page')
 }
 
 export function onUnloaded(): void {
