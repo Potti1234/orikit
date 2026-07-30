@@ -1,0 +1,375 @@
+:root {
+  color: oklch(0.24 0.015 255);
+  background: oklch(0.965 0.008 250);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 20rem;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.todo-shell {
+  width: min(46rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 5rem 0 3rem;
+}
+
+.page-header {
+  margin-bottom: 2.25rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  color: oklch(0.55 0.13 255);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title-line {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.85rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.summary {
+  margin: 0.65rem 0 0;
+  color: oklch(0.52 0.015 255);
+  font-size: 0.96rem;
+}
+
+.platform-note {
+  color: oklch(0.55 0.015 255);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.quick-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.quick-add input,
+.edit-field input {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid oklch(0.86 0.012 255);
+  border-radius: 0.78rem;
+  outline: none;
+  color: inherit;
+  background: oklch(0.995 0.003 255);
+  box-shadow: 0 0.08rem 0.2rem oklch(0.25 0.015 255 / 5%);
+}
+
+.quick-add input {
+  padding: 0.7rem 1rem;
+}
+
+.quick-add input::placeholder {
+  color: oklch(0.62 0.012 255);
+}
+
+.quick-add input:focus,
+.edit-field input:focus {
+  border-color: oklch(0.58 0.16 255);
+  box-shadow: 0 0 0 0.2rem oklch(0.68 0.13 255 / 18%);
+}
+
+.add-button {
+  min-width: 4.5rem;
+  min-height: 3rem;
+  border: 0;
+  border-radius: 0.78rem;
+  color: oklch(0.985 0.004 255);
+  background: oklch(0.57 0.18 255);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.add-button:hover:not(:disabled) {
+  background: oklch(0.52 0.18 255);
+}
+
+.add-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.add-button:disabled {
+  color: oklch(0.65 0.01 255);
+  background: oklch(0.89 0.008 255);
+  cursor: default;
+}
+
+.save-status {
+  min-height: 1.25rem;
+  margin: 0 0 1rem;
+  color: oklch(0.56 0.012 255);
+  font-size: 0.78rem;
+}
+
+.save-status.failure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid oklch(0.84 0.055 28);
+  border-radius: 0.72rem;
+  color: oklch(0.43 0.12 28);
+  background: oklch(0.955 0.025 28);
+}
+
+.todo-list {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid oklch(0.88 0.01 255);
+  border-radius: 0.95rem;
+  background: oklch(0.995 0.003 255);
+  box-shadow: 0 0.3rem 1.4rem oklch(0.25 0.015 255 / 5%);
+  list-style: none;
+}
+
+.todo-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 4rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.todo-row + .todo-row {
+  border-top: 1px solid oklch(0.91 0.008 255);
+}
+
+.todo-check {
+  width: 1.35rem;
+  height: 1.35rem;
+  margin: 0;
+  accent-color: oklch(0.57 0.18 255);
+  cursor: pointer;
+}
+
+.todo-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.completed .todo-title {
+  color: oklch(0.59 0.012 255);
+  text-decoration: line-through;
+  text-decoration-color: oklch(0.7 0.012 255);
+}
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.text-button {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-radius: 0.55rem;
+  color: oklch(0.5 0.13 255);
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.text-button:hover:not(:disabled) {
+  background: oklch(0.93 0.02 255);
+}
+
+.text-button.primary {
+  color: oklch(0.5 0.17 255);
+}
+
+.text-button.destructive {
+  color: oklch(0.5 0.15 28);
+}
+
+.text-button:focus-visible,
+.todo-check:focus-visible,
+.add-button:focus-visible {
+  outline: 0.2rem solid oklch(0.68 0.13 255 / 60%);
+  outline-offset: 0.12rem;
+}
+
+.text-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.todo-row.editing {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-block: 0.85rem;
+}
+
+.edit-field label {
+  display: block;
+  margin: 0 0 0.35rem;
+  color: oklch(0.5 0.015 255);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.edit-field input {
+  min-height: 2.55rem;
+  padding: 0.5rem 0.7rem;
+}
+
+.inline-state {
+  padding: 3.5rem 1rem;
+  text-align: center;
+}
+
+.inline-state h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.inline-state p {
+  max-width: 31rem;
+  margin: 0.55rem auto 1rem;
+  color: oklch(0.54 0.015 255);
+  line-height: 1.5;
+}
+
+.save-status.failure p {
+  margin: 0;
+}
+
+.inline-state .empty-symbol {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  place-items: center;
+  border-radius: 50%;
+  color: oklch(0.52 0.16 255);
+  background: oklch(0.92 0.035 255);
+  font-size: 1.3rem;
+  font-weight: 750;
+}
+
+.failure h2 {
+  color: oklch(0.43 0.12 28);
+}
+
+.loading-state {
+  padding: 1rem 0;
+}
+
+.skeleton-line {
+  width: 62%;
+  height: 1rem;
+  margin: 0.75rem 0;
+  border-radius: 0.5rem;
+  background: oklch(0.9 0.008 255);
+}
+
+.skeleton-line.wide {
+  width: 100%;
+  height: 3.8rem;
+}
+
+footer {
+  margin-top: 2rem;
+  color: oklch(0.6 0.012 255);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 38rem) {
+  .todo-shell {
+    width: min(100% - 1.2rem, 46rem);
+    padding-top: 2.25rem;
+  }
+
+  .title-line {
+    align-items: start;
+  }
+
+  .platform-note {
+    display: none;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+  }
+
+  .todo-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .todo-row > .row-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+    margin-left: -0.55rem;
+  }
+
+  .todo-row.editing {
+    grid-template-columns: 1fr;
+  }
+
+  .todo-row.editing > .row-actions {
+    grid-column: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .add-button,
+  .text-button {
+    transition:
+      background-color 160ms cubic-bezier(0.25, 1, 0.5, 1),
+      color 160ms cubic-bezier(0.25, 1, 0.5, 1),
+      transform 120ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+}

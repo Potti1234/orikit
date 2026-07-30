@@ -1,0 +1,27 @@
+{
+  "name": "@orikit/web-spike",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@effect/platform-browser": "4.0.0-beta.102",
+    "@orikit/spike-core": "workspace:*",
+    "@orikit/spike-trace": "workspace:*",
+    "@orikit/todo": "workspace:*",
+    "effect": "4.0.0-beta.102",
+    "foldkit": "0.134.0"
+  },
+  "devDependencies": {
+    "@foldkit/vite-plugin": "0.11.2",
+    "typescript": "5.9.3",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}
