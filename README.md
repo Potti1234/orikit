@@ -110,6 +110,12 @@ reconciliation and preserves Android text selection. See the
 [Phase 6 evidence](docs/evidence/phase6-renderer-hardening.md) and
 [ADR-0005](docs/adr/0005-native-renderer-contract.md).
 
+Phase 7 adds bounded, redacted runtime history and a paired loopback inspector
+for physical Android devices. Historical selection re-renders native UI while
+the live runtime continues, and resume returns explicitly to the live head. See
+the [Phase 7 evidence](docs/evidence/phase7-remote-devtools.md) and
+[ADR-0006](docs/adr/0006-debug-devtools-transport.md).
+
 iOS remains unverified until the macOS/Xcode phase runs.
 
 ## License

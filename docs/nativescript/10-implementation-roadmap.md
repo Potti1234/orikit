@@ -243,6 +243,9 @@ Turn the Todo renderer into a small reliable framework component.
 
 ## Phase 7 — DevTools history and remote inspector
 
+Status: complete on Windows and physical Android (2026-07-30). See
+[`../evidence/phase7-remote-devtools.md`](../evidence/phase7-remote-devtools.md).
+
 ### Objective
 
 Make Android runtime behavior inspectable from the Windows machine.

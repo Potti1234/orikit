@@ -17,7 +17,9 @@ Start here:
 5. [`nativescript/17-feasibility-spike.md`](nativescript/17-feasibility-spike.md)
    defines the first experiment and its pass/fail gates.
 
+Current implementation evidence is recorded through
+[`evidence/phase7-remote-devtools.md`](evidence/phase7-remote-devtools.md).
+
 The other numbered documents in this directory describe the earlier
 Kotlin Multiplatform compiler approach. They are retained as research and as a
 fallback option, but they are not the authoritative implementation plan.
-
