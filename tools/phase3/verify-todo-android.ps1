@@ -110,7 +110,8 @@ try {
   $ready = $false
   for ($attempt = 0; $attempt -lt 30; $attempt += 1) {
     $rawLog = @(Invoke-Adb logcat '-d' '-v' raw)
-    if ($rawLog -match 'ORIKIT_TODO_READY:') {
+    $rawLogText = $rawLog -join ''
+    if ($rawLogText -match 'ORIKIT_TODO_READY:') {
       $ready = $true
       break
     }
@@ -119,10 +120,10 @@ try {
   if (-not $ready) {
     throw 'Android app did not emit ORIKIT_TODO_READY within 15 seconds'
   }
-  if ($rawLog -notmatch 'ORIKIT_TODO_READY:.*"runtimeStatus":"Running"') {
+  if ($rawLogText -notmatch 'ORIKIT_TODO_READY:.*"runtimeStatus":"Running"') {
     throw 'Android Todo did not report the Phase 4 runtime as Running'
   }
-  if ($rawLog -notmatch 'ORIKIT_TODO_READY:.*"sessionId":"session-\d+".*"branchId":"branch-1"') {
+  if ($rawLogText -notmatch 'ORIKIT_TODO_READY:.*"sessionId":"session-\d+".*"branchId":"branch-1"') {
     throw 'Android Todo did not report valid session and branch identity'
   }
 
