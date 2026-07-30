@@ -1,4 +1,5 @@
 export * from './managed-contracts'
+export * from './managed-fixtures'
 export * from './managed-resources'
 export * from './runtime'
 export * from './types'
