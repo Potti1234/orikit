@@ -148,7 +148,7 @@ Every phase should leave:
 ```text
 Implement Phase 0 from docs/09-implementation-roadmap.md.
 Read all required documents in docs/13-agent-runbook.md first.
-Do not begin Phase 1. Preserve save.txt. Use current compatible stable
+Do not begin Phase 1. Use current compatible stable
 toolchain versions, record them in the version catalog, and verify JVM, JS,
 and Android locally. Add the required macOS CI lane and iterate until its
 Kotlin/Native, Swift import, and iOS simulator smoke checks pass. Implement the

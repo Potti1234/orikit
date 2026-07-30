@@ -8,7 +8,6 @@
       "!**/artifacts",
       "!**/dist",
       "!.playwright-cli",
-      "!save.txt",
       "!docs",
       "!apps/*/App_Resources",
       "!apps/*/hooks"

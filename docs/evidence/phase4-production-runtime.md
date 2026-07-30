@@ -137,13 +137,17 @@ pnpm evidence:runtime
 Portable verification runs 54 tests across core, runtime, Todo, trace, Story,
 Foldkit Scene, and native semantic/reconciliation suites.
 
-Android build passed. The final physical-device rerun is pending because the
-connected Samsung currently reports `unauthorized`; unlock the device and
-accept its USB debugging RSA prompt before rerunning:
+Android build and physical-device verification passed on a Samsung SM-G781B
+running Android 13 (API 33):
 
 ```text
 pnpm verify:android:todo:device
 ```
+
+The generated report is `artifacts/phase3/android-todo-report.json`. It records
+real native `EditText`, `ListView`, and `Button` controls, no `WebView`, the
+add/toggle/edit/delete flows, stable focus while typing, correct recycled-row
+state, canonical trace parity, and production runtime status `Running`.
 
 Repository-wide `pnpm lint` is not currently a clean Phase 4 signal because
 unrelated `branding/` SVG and `site/index.html` files contain accessibility

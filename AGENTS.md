@@ -43,7 +43,7 @@ Before changing implementation code, read:
 - Report commands and results as passed, failed, not run, or blocked.
 - A successful build is not proof of native behavior; inspect the native view
   class or accessibility tree where required.
-- Preserve `save.txt`, the MIT license, and the independent-project disclaimer.
+- Preserve the MIT license and the independent-project disclaimer.
 
 ## Scope control
 

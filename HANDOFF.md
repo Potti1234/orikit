@@ -24,7 +24,6 @@ biome.json
 package.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
-save.txt
 tsconfig.base.json
 .gitignore
 .node-version
@@ -51,7 +50,6 @@ They can be recreated from the lockfile and verification commands.
 
 Do not delete or replace:
 
-- `save.txt`
 - `LICENSE`
 - The independent-project disclaimer in `README.md`
 - Unrelated `branding/` or `site/` work
@@ -331,27 +329,17 @@ Evidence and decision:
 
 ## 7. Exact current stopping point
 
-Phase 4 has one unclosed verification item:
-
-```text
-BLOCKED: final physical Android rerun
-REASON: Samsung RFCT80EYE0F reports "unauthorized"
-```
-
-Latest command:
+Phase 4 is complete. The production runtime and Todo application passed the
+full physical-device verifier on a Samsung SM-G781B running Android 13
+(API 33):
 
 ```powershell
-adb devices -l
+pnpm verify:android:todo:device
 ```
 
-Latest result:
-
-```text
-RFCT80EYE0F    unauthorized
-```
-
-The Phase 4 APK builds successfully but was not installed by the final
-verifier because the script checks authorization before installation.
+The verifier confirmed native controls, no WebView, add/toggle/edit/delete,
+stable input focus, correct recycled-row state, canonical trace parity, and
+production runtime status `Running`.
 
 Current APK:
 
@@ -359,12 +347,11 @@ Current APK:
 apps/mobile-spike/platforms/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-The phone may contain the older Phase 3 build. Do not use its presence as
-Phase 4 device evidence.
+The next implementation work is Phase 5, the Android capability slice.
 
 ## 8. Immediate continuation checklist
 
-Perform these steps before starting Phase 5.
+Perform these steps when resuming development on a new workstation.
 
 ### On the new laptop
 
@@ -447,7 +434,7 @@ adb devices -l
 If it still does not appear, use the phone's Developer options to revoke USB
 debugging authorizations, reconnect, and accept the new key.
 
-### Close Phase 4
+### Re-run the Phase 4 device baseline
 
 Run:
 
@@ -469,28 +456,11 @@ Expected verifier assertions:
 - Deleted content does not survive row recycling.
 - Android logical trace equals the portable canonical trace.
 
-After it passes:
-
-1. Update
-   [`docs/evidence/phase4-production-runtime.md`](docs/evidence/phase4-production-runtime.md)
-   from pending to passed-on-device.
-2. Add the device model, Android API, command, and generated report path.
-3. Mark Phase 4 completed in
-   [`docs/nativescript/10-implementation-roadmap.md`](docs/nativescript/10-implementation-roadmap.md).
-4. Update the status paragraphs in
-   [`README.md`](README.md) and
-   [`docs/nativescript/README.md`](docs/nativescript/README.md).
-5. Run:
-
-   ```powershell
-   pnpm verify:docs
-   ```
-
-Do not start Phase 5 until this evidence is recorded.
+This baseline should remain green before and after Android capability changes.
 
 ## 9. Planned next phase
 
-After Phase 4 is closed, Phase 5 is the Android capability slice.
+Phase 5 is the Android capability slice.
 
 Objective:
 
@@ -680,12 +650,10 @@ Read AGENTS.md, HANDOFF.md, README.md, and all mandatory NativeScript
 documents listed in HANDOFF section 3 before changing implementation code.
 The authoritative plan is docs/nativescript/.
 
-First close the final Phase 4 Android verification gate. Do not start Phase 5
-until `pnpm verify:android:todo:device` passes on the authorized physical
-Samsung and the Phase 4 evidence, roadmap, README, and documentation index
-are updated.
+Phase 4 is complete. Re-run `pnpm verify:android:todo:device` as the physical
+Android baseline before starting Phase 5.
 
-Preserve save.txt, LICENSE, the independent-project disclaimer, and unrelated
+Preserve LICENSE, the independent-project disclaimer, and unrelated
 branding/ and site/ files. Do not introduce React, Vue, Angular, KMP, a
 compiler, or a general portable view AST. Do not claim iOS verification.
 
@@ -707,4 +675,4 @@ The transfer is successful when the other laptop can:
 6. Pass `pnpm verify:android:todo:device`.
 7. Update and verify the Phase 4 documentation.
 
-Only then is Phase 4 genuinely complete and Phase 5 authorized.
+Phase 4 is complete and Phase 5 is authorized.

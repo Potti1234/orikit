@@ -160,7 +160,6 @@ Record versions:
 
 - Preserve unrelated changes.
 - Never reset or discard user work.
-- Do not delete `save.txt`.
 - Do not reformat the old KMP documentation merely because it is no longer
   authoritative.
 - Do not push, publish, or create a release without authorization.

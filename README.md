@@ -92,10 +92,12 @@ cancellation, stale-callback quarantine, lifecycle diagnostics, bounded
 events, metrics, and inspectable crash state. See the
 [Phase 4 evidence](docs/evidence/phase4-production-runtime.md).
 
-iOS remains unverified until the macOS/Xcode phase runs.
+Phase 4 is verified on a physical Samsung SM-G781B running Android 13. The
+device verifier confirms native controls, the complete Todo interaction flow,
+focus and row-recycling correctness, canonical trace parity, and a running
+production runtime.
 
-`save.txt` preserves the earlier research and design discussion and must not be
-deleted or treated as normative documentation.
+iOS remains unverified until the macOS/Xcode phase runs.
 
 ## License
 

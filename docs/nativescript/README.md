@@ -88,7 +88,6 @@ When documents conflict, use this precedence:
 4. Active roadmap phase
 5. Other NativeScript documents
 6. Older KMP documents
-7. `save.txt`
 
 ## Current implementation status
 
@@ -100,7 +99,7 @@ Phase 3 validates separate idiomatic views and differential native list
 updates. It does not authorize a general renderer, portable view AST, or iOS
 support claim.
 
-The Phase 4 portable production runtime is implemented and host-verified. Its
-final Android device rerun is pending USB reauthorization. See
+The Phase 4 portable production runtime is implemented and verified on a
+physical Samsung SM-G781B running Android 13. See
 [Phase 4 evidence](../evidence/phase4-production-runtime.md) and
 [ADR-0003](../adr/0003-production-runtime-mvp.md).

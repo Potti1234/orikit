@@ -150,6 +150,9 @@ Prove shared behavior with separate idiomatic views.
 
 ## Phase 4 — production runtime MVP
 
+**Status: completed on Windows and physical Android on 2026-07-30.** See
+[Phase 4 evidence](../evidence/phase4-production-runtime.md).
+
 ### Objective
 
 Implement reliable dispatch and effect supervision.
