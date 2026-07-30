@@ -99,8 +99,12 @@ export const withManagedResources = <Model, Message extends Tagged, Command>(
   const events: Array<ManagedResourceEvent> = []
   const pending = new Set<Promise<void>>()
   const eventLimit = Math.max(1, options.eventLimit ?? 1_000)
+  const platform = globalThis as unknown as Readonly<{
+    setTimeout: (callback: () => void, milliseconds: number) => unknown
+  }>
   const delay =
-    options.delay ?? ((milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)))
+    options.delay ??
+    ((milliseconds) => new Promise<void>((resolve) => platform.setTimeout(resolve, milliseconds)))
   let ordinal = 0
   let generation = 0
   let disposed = false

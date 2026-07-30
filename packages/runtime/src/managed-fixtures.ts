@@ -16,9 +16,13 @@ export const timerSubscription = <Model, Message extends Tagged>(
     clock?: IntervalClock
   }>,
 ): SubscriptionDefinition<Model, Message> => {
+  const platform = globalThis as unknown as Readonly<{
+    setInterval: (tick: () => void, milliseconds: number) => unknown
+    clearInterval: (handle: unknown) => void
+  }>
   const clock: IntervalClock = options.clock ?? {
-    setInterval: (tick, milliseconds) => setInterval(tick, milliseconds),
-    clearInterval: (handle) => clearInterval(handle as ReturnType<typeof setInterval>),
+    setInterval: platform.setInterval.bind(platform),
+    clearInterval: platform.clearInterval.bind(platform),
   }
   return {
     id: options.id,
