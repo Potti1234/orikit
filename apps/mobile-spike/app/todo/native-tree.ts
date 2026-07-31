@@ -1,5 +1,11 @@
 import { customNativeElement, type NativeNode, nativeElement } from '@orikit/renderer-nativescript'
-import { draftChanged, presentTodo, type TodoMessage, type TodoModel } from '@orikit/todo'
+import {
+  draftChanged,
+  editDraftChanged,
+  presentTodo,
+  type TodoMessage,
+  type TodoModel,
+} from '@orikit/todo'
 
 export type NativeMobilePlatform = 'Android' | 'IOS'
 
@@ -50,37 +56,6 @@ export const describeTodoNativeTree = (
   theme: TodoNativeTheme,
 ): NativeNode<TodoMessage> => {
   const view = presentTodo(model)
-  const rows = view.rows.map((row) =>
-    nativeElement<TodoMessage>('Grid', {
-      key: row.id,
-      props: { columns: 'auto,*,auto,auto', spacing: theme.sectionSpacing / 2 },
-      accessibility: { name: row.title, checked: row.completed },
-      children: [
-        nativeElement('Button', {
-          key: `${row.id}:toggle`,
-          props: { text: row.completed ? '✓' : '○', minimumHeight: theme.controlHeight },
-          events: { tap: row.toggleMessage },
-          accessibility: { name: row.toggleLabel, checked: row.completed, role: 'checkbox' },
-        }),
-        nativeElement('Text', {
-          key: `${row.id}:title`,
-          props: { text: row.title, completed: row.completed },
-        }),
-        nativeElement('Button', {
-          key: `${row.id}:edit`,
-          props: { text: 'Edit' },
-          events: { tap: row.editMessage },
-          accessibility: { name: row.editLabel },
-        }),
-        nativeElement('Button', {
-          key: `${row.id}:delete`,
-          props: { text: 'Delete', destructive: true },
-          events: { tap: row.deleteMessage },
-          accessibility: { name: row.deleteLabel },
-        }),
-      ],
-    }),
-  )
   const editor =
     view.editor.state === 'closed'
       ? []
@@ -91,6 +66,15 @@ export const describeTodoNativeTree = (
             children: [
               nativeElement('TextField', {
                 props: { text: view.editor.draft, minimumHeight: theme.controlHeight },
+                events: {
+                  textChange: (event) =>
+                    editDraftChanged(
+                      String(
+                        (event as Readonly<{ object?: Readonly<{ text?: unknown }> }>).object
+                          ?.text ?? '',
+                      ),
+                    ),
+                },
                 accessibility: { name: 'Edit task title' },
               }),
               nativeElement('Button', {
@@ -133,7 +117,12 @@ export const describeTodoNativeTree = (
             props: { text: view.draft, minimumHeight: theme.controlHeight },
             events: {
               textChange: (event) =>
-                draftChanged(String((event as Readonly<{ value?: unknown }>).value ?? '')),
+                draftChanged(
+                  String(
+                    (event as Readonly<{ object?: Readonly<{ text?: unknown }> }>).object?.text ??
+                      '',
+                  ),
+                ),
             },
             accessibility: { name: 'New task' },
           }),
@@ -164,7 +153,11 @@ export const describeTodoNativeTree = (
             key: 'empty',
             props: { text: 'Nothing here yet. Add one clear next step.' },
           })
-        : nativeElement('List', { key: 'todos', children: rows }),
+        : customNativeElement('TodoList', {
+            key: 'todos',
+            props: { rows: view.rows },
+            accessibility: { name: 'Reminders' },
+          }),
     ],
   })
 }

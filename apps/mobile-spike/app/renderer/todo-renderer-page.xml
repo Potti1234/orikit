@@ -1,0 +1,7 @@
+<Page class="todo-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
+    <ActionBar title="Today">
+        <ActionItem text="Legacy" tap="onOpenLegacy" android.position="actionBar" accessibilityLabel="Open legacy Todo renderer" />
+        <ActionItem text="Kernel" tap="onOpenPortableKernel" android.position="actionBar" accessibilityLabel="Open Foldkit portable kernel" />
+    </ActionBar>
+    <StackLayout id="todoRendererHost" class="todo-screen" />
+</Page>
