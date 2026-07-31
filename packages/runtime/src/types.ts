@@ -170,22 +170,46 @@ export type CommandInterpreter<Command, Message> = (
   context: CommandContext,
 ) => Promise<Message>
 
+export type ScheduledCommand<Command, Message> = Readonly<{
+  description: Command
+  execute: (context: CommandContext) => Promise<Message>
+}>
+
+export type LiveRuntimeProgram<Flags, Model, Message, Command> = Readonly<{
+  init: (flags: Flags) => readonly [Model, ReadonlyArray<ScheduledCommand<Command, Message>>]
+  update: (
+    model: Model,
+    message: Message,
+  ) => readonly [Model, ReadonlyArray<ScheduledCommand<Command, Message>>]
+}>
+
 export type IdKind = 'session' | 'branch' | 'command'
+
+type RuntimeOptionsBase<Flags, Model, Message extends Tagged, Command extends Tagged> = Readonly<{
+  program: Program<Flags, Model, Message, Command>
+  flags: unknown
+  eventLimit?: number
+  freezeModel?: (model: Model) => Model
+  now?: () => number
+  idFactory?: (kind: IdKind, index: number) => string
+}>
 
 export type RuntimeOptions<
   Flags,
   Model,
   Message extends Tagged,
   Command extends Tagged,
-> = Readonly<{
-  program: Program<Flags, Model, Message, Command>
-  flags: unknown
-  interpret: CommandInterpreter<Command, Message>
-  eventLimit?: number
-  freezeModel?: (model: Model) => Model
-  now?: () => number
-  idFactory?: (kind: IdKind, index: number) => string
-}>
+> = RuntimeOptionsBase<Flags, Model, Message, Command> &
+  (
+    | Readonly<{
+        liveProgram: LiveRuntimeProgram<Flags, Model, Message, Command>
+        interpret?: CommandInterpreter<Command, Message>
+      }>
+    | Readonly<{
+        liveProgram?: undefined
+        interpret: CommandInterpreter<Command, Message>
+      }>
+  )
 
 export type ProductionRuntime<Model, Message, Command> = Readonly<{
   dispatch: (input: unknown, source?: DispatchSource) => void

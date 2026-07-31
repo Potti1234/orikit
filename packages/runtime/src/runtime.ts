@@ -12,6 +12,7 @@ import type {
   RuntimeOptions,
   RuntimeSnapshot,
   RuntimeStatus,
+  ScheduledCommand,
 } from './types'
 
 type QueuedMessage<Message> = Readonly<{
@@ -133,7 +134,21 @@ export const createProductionRuntime = <
 ): ProductionRuntime<Model, Message, Command> => {
   const codecs = codecsFor(options.program)
   const flags = codecs.decodeFlags(options.flags)
-  const [initializedModel, initializedCommands] = options.program.init(flags)
+  const [initializedModel, initializedCommands] =
+    options.liveProgram === undefined
+      ? (() => {
+          const [model, commands] = options.program.init(flags)
+          return [
+            model,
+            commands.map(
+              (description): ScheduledCommand<Command, Message> => ({
+                description,
+                execute: (context) => options.interpret(description, context),
+              }),
+            ),
+          ] as const
+        })()
+      : options.liveProgram.init(flags)
   const freezeModel = options.freezeModel ?? defaultFreeze
   const now = options.now ?? Date.now
   const idFactory = options.idFactory ?? defaultIdFactory
@@ -309,11 +324,14 @@ export const createProductionRuntime = <
     scheduleDrain()
   }
 
-  const scheduleCommand = (commandInput: Command, causedBySequence: number): void => {
+  const scheduleCommand = (
+    scheduled: ScheduledCommand<Command, Message>,
+    causedBySequence: number,
+  ): void => {
     if (status._tag !== 'Running') {
       return
     }
-    const command = codecs.decodeCommand(commandInput)
+    const command = codecs.decodeCommand(scheduled.description)
     const commandId = idFactory('command', ++commandIndex)
     const execution: CommandExecution<Command> = {
       commandId,
@@ -338,7 +356,7 @@ export const createProductionRuntime = <
         }
         mutableMetrics.commandsStarted += 1
         record({ _tag: 'CommandStarted', execution: runningExecution }, execution.branchId)
-        return options.interpret(command, {
+        return scheduled.execute({
           commandId,
           sessionId,
           branchId: execution.branchId,
@@ -453,9 +471,25 @@ export const createProductionRuntime = <
         }
         const started = now()
         try {
-          const [nextModelInput, commandInputs] = options.program.update(model, queued.message)
+          const [nextModelInput, scheduledCommands] =
+            options.liveProgram === undefined
+              ? (() => {
+                  const [nextModel, commands] = options.program.update(model, queued.message)
+                  return [
+                    nextModel,
+                    commands.map(
+                      (description): ScheduledCommand<Command, Message> => ({
+                        description,
+                        execute: (context) => options.interpret(description, context),
+                      }),
+                    ),
+                  ] as const
+                })()
+              : options.liveProgram.update(model, queued.message)
           const nextModel = freezeModel(codecs.decodeModel(nextModelInput))
-          const commands = commandInputs.map(codecs.decodeCommand)
+          const commands = scheduledCommands.map(({ description }) =>
+            codecs.decodeCommand(description),
+          )
           const duration = Math.max(0, now() - started)
           model = nextModel
           sequence += 1
@@ -474,7 +508,7 @@ export const createProductionRuntime = <
             updateDurationMilliseconds: duration,
           })
           publish()
-          commands.forEach((command) => {
+          scheduledCommands.forEach((command) => {
             scheduleCommand(command, sequence)
           })
         } catch (failure) {
@@ -591,7 +625,7 @@ export const createProductionRuntime = <
     },
   }
 
-  initializedCommands.map(codecs.decodeCommand).forEach((command) => {
+  initializedCommands.forEach((command) => {
     scheduleCommand(command, 0)
   })
 

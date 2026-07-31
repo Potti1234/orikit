@@ -96,6 +96,52 @@ const deferred = <Value>() => {
 }
 
 describe('production runtime dispatch', () => {
+  it('executes an ephemeral live Command while recording only its description', async () => {
+    let liveExecutions = 0
+    let fallbackExecutions = 0
+    const runtime = createProductionRuntime({
+      program: testProgram,
+      flags: {},
+      interpret: async (command) => {
+        fallbackExecutions += 1
+        return addCompleted(command.value)
+      },
+      liveProgram: {
+        init: () => [{ count: 0, order: [] }, []],
+        update: (model, message) => {
+          const [nextModel, commands] = testProgram.update(model, message)
+          return [
+            nextModel,
+            commands.map((description) => ({
+              description,
+              execute: async () => {
+                liveExecutions += 1
+                return addCompleted(description.value)
+              },
+            })),
+          ]
+        },
+      },
+      idFactory: (kind, index) => `${kind}-${index}`,
+    })
+
+    runtime.dispatch(requestAdd(6))
+    await runtime.settle()
+
+    expect(runtime.current().count).toBe(6)
+    expect(liveExecutions).toBe(1)
+    expect(fallbackExecutions).toBe(0)
+    expect(JSON.stringify(runtime.events())).not.toContain('execute')
+    expect(runtime.events()).toContainEqual(
+      expect.objectContaining({
+        _tag: 'CommandQueued',
+        execution: expect.objectContaining({
+          command: { _tag: 'AddLater', value: 6 },
+        }),
+      }),
+    )
+  })
+
   it('does not lose 10,000 Messages and keeps bounded diagnostics', async () => {
     const runtime = makeRuntime(immediateInterpreter, 64)
 
