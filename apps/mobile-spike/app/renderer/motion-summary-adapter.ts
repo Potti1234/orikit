@@ -1,9 +1,10 @@
-import { Label, type View } from '@nativescript/core'
+import { GridLayout, Label, type View } from '@nativescript/core'
 import type { NativeElementAdapter } from '@orikit/renderer-nativescript'
 
 type MotionNode = Readonly<{ props?: Readonly<Record<string, unknown>> }>
 
 const patch = (label: Label, node: MotionNode): void => {
+  GridLayout.setRow(label, Number(node.props?.row ?? 0))
   const samples = Number(node.props?.samples ?? 0)
   const magnitude = Number(node.props?.magnitude ?? 0)
   label.text =

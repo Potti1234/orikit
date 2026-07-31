@@ -62,7 +62,7 @@ export const describeTodoNativeTree = (
       : [
           nativeElement<TodoMessage>('Stack', {
             key: 'editor',
-            props: { spacing: theme.sectionSpacing / 2 },
+            props: { row: 2, spacing: theme.sectionSpacing / 2 },
             children: [
               nativeElement('TextField', {
                 props: { text: view.editor.draft, minimumHeight: theme.controlHeight },
@@ -98,12 +98,13 @@ export const describeTodoNativeTree = (
       padding: theme.pagePadding,
       spacing: theme.sectionSpacing,
       platform: theme.platform,
+      rows: 'auto,auto,auto,auto,*',
     },
     accessibility: { name: 'Today tasks' },
     children: [
       nativeElement('Stack', {
         key: 'heading',
-        props: { spacing: theme.sectionSpacing / 2 },
+        props: { row: 0, spacing: theme.sectionSpacing / 2 },
         children: [
           nativeElement('Text', { props: { text: view.title, role: 'heading' } }),
           nativeElement('Text', { props: { text: view.summary, live: 'polite' } }),
@@ -111,10 +112,15 @@ export const describeTodoNativeTree = (
       }),
       nativeElement('Grid', {
         key: 'composer',
-        props: { columns: '*,auto', spacing: theme.sectionSpacing / 2 },
+        props: { row: 1, columns: '*,auto', spacing: theme.sectionSpacing / 2 },
         children: [
           nativeElement('TextField', {
-            props: { text: view.draft, minimumHeight: theme.controlHeight },
+            props: {
+              column: 0,
+              text: view.draft,
+              disabled: view.editor.state !== 'closed',
+              minimumHeight: theme.controlHeight,
+            },
             events: {
               textChange: (event) =>
                 draftChanged(
@@ -124,11 +130,12 @@ export const describeTodoNativeTree = (
                   ),
                 ),
             },
-            accessibility: { name: 'New task' },
+            accessibility: { name: 'New task', disabled: view.editor.state !== 'closed' },
           }),
           nativeElement('Button', {
             props: {
               text: 'Add',
+              column: 1,
               disabled: !view.canAdd,
               minimumHeight: theme.controlHeight,
               cornerRadius: theme.cornerRadius,
@@ -142,6 +149,7 @@ export const describeTodoNativeTree = (
       customNativeElement('MotionSummary', {
         key: 'motion',
         props: {
+          row: 3,
           samples: model.motionSamples,
           magnitude: model.lastMotion,
           platformImplementation: theme.motionAdapter.implementation,
@@ -151,11 +159,11 @@ export const describeTodoNativeTree = (
       view.empty
         ? nativeElement('Text', {
             key: 'empty',
-            props: { text: 'Nothing here yet. Add one clear next step.' },
+            props: { row: 4, text: 'Nothing here yet. Add one clear next step.' },
           })
         : customNativeElement('TodoList', {
             key: 'todos',
-            props: { rows: view.rows },
+            props: { row: 4, rows: view.rows },
             accessibility: { name: 'Reminders' },
           }),
     ],

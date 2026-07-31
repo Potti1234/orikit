@@ -220,7 +220,7 @@ try {
   }
   $androidTrace = -join (1..$partCount | ForEach-Object { $parts[$_] })
   $expectedTrace = (
-    & pnpm exec tsx -e "import { canonicalTodoTrace } from './packages/spike-trace/src/index.ts'; console.log(canonicalTodoTrace())"
+    & pnpm exec tsx tools/phase3/print-todo-trace.mts
   ) -join "`n"
   if ($LASTEXITCODE -ne 0 -or $androidTrace -ne $expectedTrace.Trim()) {
     throw 'Android canonical Todo trace differs from the portable trace'

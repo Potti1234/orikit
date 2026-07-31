@@ -97,14 +97,19 @@ export const createTodoListAdapter = (
   const updateValues = (list: ListView, rows: ReadonlyArray<KeyedTodoRow>): void => {
     const values = valuesByList.get(list)
     if (values === undefined) throw new Error('Todo ListView is not registered')
-    applyKeyedValues(values, reconcileKeyedValues([...values], rows, sameRow))
+    const desired = reconcileKeyedValues([...values], rows, sameRow)
+    const changed =
+      values.length !== desired.length ||
+      desired.some((row, index) => values.getItem(index) !== row)
+    if (changed) applyKeyedValues(values, desired)
     if (list.items !== values) list.items = values
-    list.refresh()
   }
   return {
     create: (node) => {
       const list = new ListView()
+      GridLayout.setRow(list, Number(node.props?.row ?? 0))
       list.className = 'todo-list'
+      list.accessibilityLabel = 'Reminders'
       list.separatorColor = new Color('#E5E5EA')
       const values = new ObservableArray<KeyedTodoRow>([])
       const listener = (event: EventData): void => {

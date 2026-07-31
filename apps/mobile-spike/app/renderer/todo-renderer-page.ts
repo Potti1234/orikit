@@ -8,6 +8,7 @@ import {
   type View,
 } from '@nativescript/core'
 import { createNativeRenderer, type NativeRenderer } from '@orikit/renderer-nativescript'
+import { createNativeScriptHost } from '@orikit/renderer-nativescript/host'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
 import {
   createInMemoryTodoStorage,
@@ -19,7 +20,6 @@ import { connectTodoDevtools, type TodoDevtoolsClient } from '../todo/devtools-c
 import { androidMotionSubscription } from '../todo/motion-subscription'
 import { androidTodoTheme, describeTodoNativeTree } from '../todo/native-tree'
 import { motionSummaryAdapter } from './motion-summary-adapter'
-import { createNativeScriptHost } from './nativescript-host'
 import { createTodoListAdapter } from './todo-list-adapter'
 
 let application: TodoApplication | undefined
@@ -51,14 +51,20 @@ const detachLifecycle = (): void => {
 const logEvidence = async (todoApplication: TodoApplication): Promise<void> => {
   await todoApplication.settle()
   const trace = canonicalTodoTrace()
-  for (const [index, part] of (trace.match(/.{1,600}/g) ?? []).entries())
-    console.log(`ORIKIT_TODO_TRACE_ANDROID:${index + 1}:${part}`)
+  const parts = trace.match(/.{1,600}/g) ?? []
+  for (const [index, part] of parts.entries())
+    console.log(`ORIKIT_TODO_TRACE_ANDROID:${index + 1}/${parts.length}:${part}`)
   const fixture = runTodoFixture()
+  const snapshot = todoApplication.snapshot()
   console.log(
-    `ORIKIT_TODO_RENDERER_READY:${JSON.stringify({
+    `ORIKIT_TODO_READY:${JSON.stringify({
       finalModelFingerprint: fixture.finalModelFingerprint,
       nativeList: 'ListView',
       nativeTextInput: 'TextField',
+      runtimeStatus: todoApplication.status()._tag,
+      sessionId: snapshot.sessionId,
+      branchId: snapshot.branchId,
+      sequence: snapshot.sequence,
       renderer: renderer?.inspect(),
       runtimeMetrics: todoApplication.metrics(),
       managedResources: todoApplication.managedResources(),
@@ -98,10 +104,6 @@ export function onNavigatingTo(args: NavigatedData): void {
     if (root !== undefined && container.getChildIndex(root) < 0) container.addChild(root)
   })
   void logEvidence(application)
-}
-
-export function onOpenLegacy(_args: EventData): void {
-  Frame.topmost().navigate('todo/todo-page')
 }
 
 export function onOpenPortableKernel(_args: EventData): void {
