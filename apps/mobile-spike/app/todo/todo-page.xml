@@ -1,6 +1,7 @@
 <Page class="todo-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
     <ActionBar class="todo-bar" title="Today">
         <ActionItem text="Kernel" tap="onOpenPortableKernel" android.position="actionBar" accessibilityLabel="Open Foldkit portable kernel" />
+        <ActionItem text="Renderer" tap="onOpenRenderer" android.position="actionBar" accessibilityLabel="Open Foldkit host renderer" />
     </ActionBar>
     <GridLayout rows="auto,auto,auto,auto,auto,auto,*" class="todo-screen" accessibilityLabel="Today tasks">
         <StackLayout row="0" class="todo-heading">

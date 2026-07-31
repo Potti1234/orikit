@@ -283,6 +283,10 @@ export function onOpenPortableKernel(_args: EventData): void {
   Frame.topmost().navigate('home/home-page')
 }
 
+export function onOpenRenderer(_args: EventData): void {
+  Frame.topmost().navigate('renderer/renderer-page')
+}
+
 export function onResumeLive(_args: EventData): void {
   application?.devtools()?.resumeLive()
 }

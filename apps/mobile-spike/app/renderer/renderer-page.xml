@@ -1,0 +1,4 @@
+<Page class="app-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
+    <ActionBar title="Foldkit host renderer" />
+    <StackLayout id="rendererHost" class="screen" />
+</Page>
