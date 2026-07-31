@@ -7,11 +7,13 @@ import {
   type NativeHost,
   type NativeNode,
   RendererError,
+  type RendererInspection,
 } from './types'
 
 type MountedEvent = {
   source: NativeEvent<unknown>
   listener: (event: unknown) => void
+  active: boolean
 }
 
 type MountedNode<Message, View> = {
@@ -31,6 +33,7 @@ export type NativeRenderer<Message, View> = Readonly<{
   render: (node: NativeNode<Message>) => View
   currentView: () => View | undefined
   dispose: () => void
+  inspect: () => RendererInspection
 }>
 
 const identity = (node: NativeNode<unknown>): string =>
@@ -79,6 +82,9 @@ export const createNativeRenderer = <Message, View>(
   options: NativeRendererOptions<Message, View>,
 ): NativeRenderer<Message, View> => {
   let root: MountedNode<Message, View> | undefined
+  let createdNodes = 0
+  let disposedNodes = 0
+  let renderCount = 0
 
   const customAdapter = (
     node: CustomNativeNode<Message>,
@@ -99,6 +105,7 @@ export const createNativeRenderer = <Message, View>(
     const desired = next.events ?? {}
     for (const [name, current] of mounted.events) {
       if (desired[name] === undefined) {
+        current.active = false
         options.host.removeEventListener(mounted.view, name, current.listener)
         mounted.events.delete(name)
       }
@@ -112,8 +119,10 @@ export const createNativeRenderer = <Message, View>(
       const binding: MountedEvent = {
         source: source as NativeEvent<unknown>,
         listener: () => undefined,
+        active: true,
       }
       const listener = (event: unknown): void => {
+        if (!binding.active) return
         const current = binding.source as NativeEvent<Message>
         const message =
           typeof current === 'function' ? (current as (event: unknown) => Message)(event) : current
@@ -155,6 +164,7 @@ export const createNativeRenderer = <Message, View>(
   const disposeMounted = (mounted: MountedNode<Message, View>): void => {
     for (const child of mounted.children) disposeMounted(child)
     for (const [name, event] of mounted.events) {
+      event.active = false
       options.host.removeEventListener(mounted.view, name, event.listener)
     }
     if (mounted.node._tag === 'Custom') {
@@ -164,6 +174,7 @@ export const createNativeRenderer = <Message, View>(
     }
     mounted.children = []
     mounted.events.clear()
+    disposedNodes += 1
   }
 
   const mount = (node: NativeNode<Message>, path: string): MountedNode<Message, View> => {
@@ -178,6 +189,7 @@ export const createNativeRenderer = <Message, View>(
       events: new Map(),
       children: [],
     }
+    createdNodes += 1
     if (node._tag === 'Element') {
       patchProperties(mounted, { _tag: 'Element', kind: node.kind }, node, path)
       const children = node.children ?? []
@@ -254,6 +266,7 @@ export const createNativeRenderer = <Message, View>(
   return {
     render: (node) => {
       try {
+        renderCount += 1
         root = root === undefined ? mount(node, 'root') : reconcile(root, node, 'root')
         return root.view
       } catch (failure) {
@@ -269,6 +282,17 @@ export const createNativeRenderer = <Message, View>(
     dispose: () => {
       if (root !== undefined) disposeMounted(root)
       root = undefined
+    },
+    inspect: () => {
+      let mountedNodes = 0
+      let eventInvokers = 0
+      const visit = (mounted: MountedNode<Message, View>): void => {
+        mountedNodes += 1
+        eventInvokers += mounted.events.size
+        mounted.children.forEach(visit)
+      }
+      if (root !== undefined) visit(root)
+      return { mountedNodes, eventInvokers, createdNodes, disposedNodes, renderCount }
     },
   }
 }

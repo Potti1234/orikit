@@ -217,4 +217,31 @@ describe('NativeScript renderer contract', () => {
     expect(updates).toEqual(['terrain'])
     expect(disposed).toEqual([first])
   })
+
+  it('invalidates retained listeners and balances repeated mount disposal', () => {
+    const messages: Array<string> = []
+    const renderer = createNativeRenderer<string, FakeView>({
+      host,
+      dispatch: (message) => messages.push(message),
+    })
+    let retained: ((event: unknown) => void) | undefined
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      const button = renderer.render(
+        nativeElement('Button', {
+          events: { tap: `Tapped-${cycle}` },
+          accessibility: { name: 'Run' },
+        }),
+      )
+      retained = [...(button.listeners.get('tap') ?? [])][0]
+      renderer.dispose()
+      retained?.({})
+      expect(renderer.inspect()).toMatchObject({ mountedNodes: 0, eventInvokers: 0 })
+    }
+    expect(messages).toEqual([])
+    expect(renderer.inspect()).toMatchObject({
+      createdNodes: 100,
+      disposedNodes: 100,
+      renderCount: 100,
+    })
+  })
 })

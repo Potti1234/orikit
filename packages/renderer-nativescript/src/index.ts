@@ -1,4 +1,5 @@
 export * from './keyed'
 export * from './node'
+export * from './registry'
 export * from './renderer'
 export * from './types'

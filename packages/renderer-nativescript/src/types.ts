@@ -84,6 +84,14 @@ export type RendererDiagnostic = Readonly<{
   detail: string
 }>
 
+export type RendererInspection = Readonly<{
+  mountedNodes: number
+  eventInvokers: number
+  createdNodes: number
+  disposedNodes: number
+  renderCount: number
+}>
+
 export class RendererError extends Error {
   readonly diagnostic: RendererDiagnostic
 
