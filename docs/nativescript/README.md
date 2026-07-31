@@ -117,5 +117,7 @@ first macOS/Xcode iOS bring-up.
 The Foldkit portable-kernel experiment is integrated after Phase 9. It adds a
 browser-independent `foldkit/portable` entry point, executes original Foldkit
 Command Effects through OriKit's supervised runtime, and preserves serialized
-history and effect-free replay. The proposed Foldkit NativeScript host renderer
-remains a separate, unimplemented experiment.
+history and effect-free replay. The NativeScript host renderer and
+renderer-backed Todo are now verified on physical Android. Direct Snabbdom
+reuse was rejected in favor of OriKit's host-neutral reconciler and reusable
+`@orikit/renderer-nativescript/host` adapter.

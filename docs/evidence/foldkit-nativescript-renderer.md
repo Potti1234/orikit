@@ -7,8 +7,8 @@ Date: 2026-07-31
 OriKit now has a reusable host-neutral reconciler connected to real
 NativeScript controls. The portable Foldkit program/runtime remains the shared
 non-web boundary; the native view is a separate pure description. Counter and
-Todo both use the same renderer. Todo is the default route and the previous XML
-renderer remains available as `Legacy` for reversal.
+Todo both use the same renderer. Todo is the default route. After the unlocked
+device gate passed, the duplicate XML/manual Todo renderer was removed.
 
 Direct reuse of Foldkit's Snabbdom patch initializer was rejected. Its VNode,
 DOM API, module hooks, default document access, and node operations are typed
@@ -44,17 +44,19 @@ the plan's pause conditions.
 | Physical Android install/start, Samsung SM-G781B | PASSED |
 | On-device renderer marker | PASSED: 9 real mounted nodes, 2 event invokers |
 | Canonical Todo fingerprint | PASSED: `be8b55ce7256bbfcb9b7f50bb71488bb0ca9ff7779eac9941e51d440997250c2` |
-| Native hierarchy dump | BLOCKED: device keyguard required user unlock |
-| Manual IME/TalkBack and 1,000-row stress | NOT RUN |
+| Native hierarchy and interaction flow | PASSED on unlocked physical device |
+| Add, toggle, edit, delete | PASSED |
+| Controlled typing focus and stale recycled rows | PASSED |
+| TalkBack and 1,000-row stress | NOT RUN |
 | iOS/Xcode/UIKit/VoiceOver | NOT RUN |
 
-The device log reported `ListView`, `TextField`, active accelerometer resource,
-and the expected canonical fingerprint. A successful build/start is not treated
-as proof for the blocked accessibility and interaction checks.
+The device hierarchy reported Android `ListView`, `EditText`, and `Button`
+classes with no `WebView`. The automated flow verified add, toggle, edit, and
+delete behavior, stable input focus, no stale recycled row after deletion, the
+running production runtime, and byte-identical canonical trace output.
 
 ## Remaining gates
 
-Before removing the legacy renderer, unlock the test device and run the full
-add/edit/toggle/delete, focus/selection, scroll-retention, accessibility, stale
-row callback, time-travel, and 1,000-row performance flows. Repeat the platform
-suite on macOS/Xcode before claiming iOS support.
+Complete the remaining scroll-retention, time-travel interaction, and 1,000-row
+performance flows. Repeat the platform suite on macOS/Xcode before claiming
+iOS support.

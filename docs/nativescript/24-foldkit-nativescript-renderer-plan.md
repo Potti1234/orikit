@@ -43,7 +43,7 @@ It is compatible with accepted decisions because:
 
 ## 23.3 Starting point
 
-The current native Todo path is:
+The pre-experiment native Todo path was:
 
 ```text
 Todo Model
@@ -636,7 +636,7 @@ pass on physical Android.
 ### Slice H Ã¢â‚¬â€ Todo cutover
 
 1. Switch Todo to the new renderer behind an easy-to-remove entry point.
-2. Retain the old XML/manual renderer until all gates pass.
+2. Retain the old XML/manual renderer until the physical Android cutover gate passes.
 3. Run portable, web, Android build, device, trace, and documentation checks.
 4. Record code removed, code added, and remaining application-specific view
    differences.
@@ -754,8 +754,8 @@ Pause the direction if:
 
 ## 23.22 Reversal
 
-Keep the current Todo XML/manual renderer until Slice H passes. Reversal then
-means:
+The XML/manual renderer was retained until Slice H and removed after the
+physical Android interaction gate passed. Reversal now means:
 
 1. restore the application entry point to the existing renderer;
 2. remove only the experimental package reference and fixture wiring;
@@ -765,6 +765,5 @@ means:
 
 The experiment must not require Model, Message, Command, Story, history, or
 trace migrations, so reversal remains a renderer-only operation.
-
 
 

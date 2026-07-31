@@ -12,8 +12,8 @@ apps/web-spike
 
 apps/mobile-spike
 └── app/todo
-    ├── native-tree.ts  shared Android/iOS native semantic tree experiment
-    ├── native-view.ts  current production NativeScript projection adapter
+    ├── native-tree.ts  pure production NativeScript node description
+    ├── renderer/       NativeScript mount and feature adapters
     ├── *.android.ts    Android host details
     └── *.ios.ts        future iOS host details
 ```
