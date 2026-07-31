@@ -13,7 +13,7 @@
     "doctor:android": "ns doctor android",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "test": "pnpm --filter @orikit/spike-core --filter @orikit/runtime --filter @orikit/devtools-protocol --filter @orikit/devtools-runtime --filter @orikit/devtools-relay --filter @orikit/location --filter @orikit/renderer-nativescript --filter @orikit/spike-trace --filter @orikit/todo --filter @orikit/story --filter @orikit/web-spike --filter @orikit/mobile-spike test",
+    "test": "pnpm --filter @orikit/spike-core --filter @orikit/runtime --filter @orikit/devtools-protocol --filter @orikit/devtools-runtime --filter @orikit/devtools-relay --filter @orikit/location --filter @orikit/renderer-nativescript --filter @orikit/spike-trace --filter @orikit/todo --filter @orikit/story --filter @orikit/foldkit-runtime-adapter --filter @orikit/foldkit-portable-spike --filter @orikit/web-spike --filter @orikit/mobile-spike test",
     "typecheck": "pnpm -r typecheck",
     "verify:portable": "pnpm verify:portable:imports && pnpm typecheck && pnpm test",
     "verify:portable:imports": "tsx tools/verify-portable-imports.mts",
