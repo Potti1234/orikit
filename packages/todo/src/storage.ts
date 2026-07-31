@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import type {
   LoadTodos,
   SaveTodos,
@@ -9,12 +10,9 @@ import type {
   TodosSaved,
   TodosSaveFailed,
 } from './program'
-import { todosLoaded, todosLoadFailed, todosSaved, todosSaveFailed } from './program'
+import { type TodoStorage, TodoStorageService } from './program'
 
-export type TodoStorage = Readonly<{
-  load: () => Promise<ReadonlyArray<Todo>>
-  save: (todos: ReadonlyArray<Todo>) => Promise<void>
-}>
+export type { TodoStorage } from './program'
 
 export type InMemoryTodoStorage = TodoStorage &
   Readonly<{
@@ -22,9 +20,6 @@ export type InMemoryTodoStorage = TodoStorage &
     failNextLoad: (reason: string) => void
     failNextSave: (reason: string) => void
   }>
-
-const messageFrom = (failure: unknown): string =>
-  failure instanceof Error ? failure.message : String(failure)
 
 export const createInMemoryTodoStorage = (
   initialTodos: ReadonlyArray<Todo> = [],
@@ -76,19 +71,7 @@ export async function interpretTodoCommand(
   command: TodoCommand,
   storage: TodoStorage,
 ): Promise<TodoMessage> {
-  switch (command._tag) {
-    case 'LoadTodos':
-      try {
-        return todosLoaded(await storage.load())
-      } catch (failure) {
-        return todosLoadFailed(messageFrom(failure))
-      }
-    case 'SaveTodos':
-      try {
-        await storage.save(command.todos)
-        return todosSaved()
-      } catch (failure) {
-        return todosSaveFailed(messageFrom(failure))
-      }
-  }
+  return command.name === 'LoadTodos'
+    ? Effect.runPromise(Effect.provideService(command.effect, TodoStorageService, storage))
+    : Effect.runPromise(Effect.provideService(command.effect, TodoStorageService, storage))
 }

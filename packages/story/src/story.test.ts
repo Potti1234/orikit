@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   addRequested,
+  describeTodoCommand,
   draftChanged,
   initialTodoModel,
   loadTodos,
@@ -13,7 +14,6 @@ import {
   runTodoLoadStory,
   runTodoToggleDeleteStory,
   saveTodos,
-  type TodoCommand,
   type TodoMessage,
   type TodoModel,
   todoProgram,
@@ -70,13 +70,19 @@ describe('Story', () => {
 
   it('rejects a command completion that violates its contract', () => {
     expect(() =>
-      runStory(todoProgram, [Story.flags({}), Story.resolve(loadTodos(), todosSaved())]),
+      runStory(todoProgram, [
+        Story.flags({}),
+        Story.resolve(describeTodoCommand(loadTodos()), todosSaved()),
+      ]),
     ).toThrowError(/cannot complete command "LoadTodos"/)
   })
 
   it('rejects a resolution for a different pending command', () => {
     expect(() =>
-      runStory(todoProgram, [Story.flags({}), Story.resolve(saveTodos([]), todosSaved())]),
+      runStory(todoProgram, [
+        Story.flags({}),
+        Story.resolve(describeTodoCommand(saveTodos([])), todosSaved()),
+      ]),
     ).toThrowError(/resolved command did not match/)
   })
 
@@ -87,17 +93,24 @@ describe('Story', () => {
       Story.message(addRequested()),
     ])
     expect(result.pendingCommands).toEqual([
-      saveTodos([{ id: 'todo-1', title: 'Pending', completed: false }]),
+      describeTodoCommand(saveTodos([{ id: 'todo-1', title: 'Pending', completed: false }])),
     ])
   })
 
   it('rejects invalid commands emitted by update', () => {
     const invalidProgram = {
       ...todoProgram,
-      update: (): readonly [TodoModel, ReadonlyArray<TodoCommand>] => [
-        initialTodoModel(),
-        [{ _tag: 'SaveTodos', todos: [{ id: 'bad', title: 'Bad' }] } as unknown as TodoCommand],
-      ],
+      update: () =>
+        [
+          initialTodoModel(),
+          [
+            {
+              _tag: undefined as unknown as string,
+              name: 'SaveTodos',
+              args: { todos: [{ id: 'bad' }] },
+            },
+          ],
+        ] as const,
     }
     expect(() =>
       runStory(invalidProgram, [

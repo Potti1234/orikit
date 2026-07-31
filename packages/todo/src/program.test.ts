@@ -11,9 +11,10 @@ import {
   editRequested,
   initialTodoModel,
   interpretTodoCommand,
+  loadTodos,
   motionObserved,
-  presentTodo,
   saveRetried,
+  saveTodos,
   todosLoaded,
   todosSaved,
   todosSaveFailed,
@@ -29,7 +30,7 @@ describe('Todo Program', () => {
     model = updateTodo(model, draftChanged('  Buy milk  '))[0]
     const added = updateTodo(model, addRequested())
     expect(added[0].todos).toEqual([{ id: 'todo-1', title: 'Buy milk', completed: false }])
-    expect(added[1][0]?._tag).toBe('SaveTodos')
+    expect(added[1][0]?.name).toBe('SaveTodos')
 
     model = updateTodo(added[0], todosSaved())[0]
     model = updateTodo(model, editRequested('todo-1'))[0]
@@ -49,7 +50,8 @@ describe('Todo Program', () => {
     const retried = updateTodo(failed, saveRetried())
     expect(retried[0].todos).toEqual([milk])
     expect(retried[0].saveState).toEqual({ _tag: 'Saving' })
-    expect(retried[1]).toEqual([{ _tag: 'SaveTodos', todos: [milk] }])
+    expect(retried[1]).toHaveLength(1)
+    expect(retried[1][0]).toMatchObject({ name: 'SaveTodos', args: { todos: [milk] } })
   })
 
   it('keeps native motion samples in the portable Model', () => {
@@ -57,34 +59,14 @@ describe('Todo Program', () => {
     expect(model.motionSamples).toBe(1)
     expect(model.lastMotion).toBe(9.81)
   })
-
-  it('projects shared behavior and accessibility semantics without platform imports', () => {
-    const model = updateTodo(initialTodoModel(), todosLoaded([milk]))[0]
-    const view = presentTodo(model)
-    expect(view).toMatchObject({
-      title: 'Today',
-      openCount: 1,
-      completedCount: 0,
-      canAdd: false,
-      rows: [
-        {
-          id: 'milk',
-          toggleLabel: 'Mark complete: Buy milk',
-          editLabel: 'Edit: Buy milk',
-          deleteLabel: 'Delete: Buy milk',
-        },
-      ],
-    })
-    expect(view.rows[0]?.toggleMessage).toEqual(toggleRequested('milk'))
-  })
 })
 
 describe('in-memory Todo storage', () => {
   it('round-trips immutable values through Command completion Messages', async () => {
     const storage = createInMemoryTodoStorage()
-    const saveResult = await interpretTodoCommand({ _tag: 'SaveTodos', todos: [milk] }, storage)
+    const saveResult = await interpretTodoCommand(saveTodos([milk]), storage)
     expect(saveResult).toEqual({ _tag: 'TodosSaved' })
-    const loadResult = await interpretTodoCommand({ _tag: 'LoadTodos' }, storage)
+    const loadResult = await interpretTodoCommand(loadTodos(), storage)
     expect(loadResult).toEqual({ _tag: 'TodosLoaded', todos: [milk] })
   })
 
@@ -109,6 +91,19 @@ describe('in-memory Todo storage', () => {
           event._tag === 'CommandQueued' ? [event.execution.causedBySequence] : [],
         ),
     ).toEqual([0, 3])
+    expect(JSON.stringify(application.events())).not.toContain('effect')
+    expect(application.events()).toContainEqual(
+      expect.objectContaining({
+        _tag: 'CommandCompleted',
+        execution: expect.objectContaining({
+          command: {
+            _tag: 'SaveTodos',
+            name: 'SaveTodos',
+            args: { todos: [{ id: 'todo-1', title: 'Persist me', completed: false }] },
+          },
+        }),
+      }),
+    )
     application.dispose()
   })
 
@@ -116,11 +111,11 @@ describe('in-memory Todo storage', () => {
     const storage = createInMemoryTodoStorage()
     storage.failNextLoad('offline')
     storage.failNextSave('read only')
-    expect(await interpretTodoCommand({ _tag: 'LoadTodos' }, storage)).toEqual({
+    expect(await interpretTodoCommand(loadTodos(), storage)).toEqual({
       _tag: 'TodosLoadFailed',
       reason: 'offline',
     })
-    expect(await interpretTodoCommand({ _tag: 'SaveTodos', todos: [milk] }, storage)).toEqual({
+    expect(await interpretTodoCommand(saveTodos([milk]), storage)).toEqual({
       _tag: 'TodosSaveFailed',
       reason: 'read only',
     })

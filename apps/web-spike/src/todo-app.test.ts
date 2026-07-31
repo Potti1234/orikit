@@ -1,21 +1,5 @@
-import {
-  initialTodoModel,
-  type Todo,
-  type TodoModel,
-  todosLoaded,
-  todosSaved,
-} from '@orikit/todo'
-import {
-  Command,
-  click,
-  expect,
-  label,
-  role,
-  scene,
-  with as sceneWith,
-  text,
-  type,
-} from 'foldkit/scene'
+import { initialTodoModel, type Todo, type TodoModel, todosLoaded, todosSaved } from '@orikit/todo'
+import { Command, click, expect, given, label, role, scene, text, type } from 'foldkit/scene'
 import { describe, it } from 'vitest'
 
 import { LoadTodosCommand, SaveTodosCommand, updateTodoWeb, viewTodoWeb } from './todo-app'
@@ -32,7 +16,7 @@ describe('Todo Foldkit Scene', () => {
   it('adds a reminder through the labeled form', () => {
     scene(
       { update: updateTodoWeb, view: viewTodoWeb },
-      sceneWith(ready([])),
+      given(ready([])),
       type(label('New reminder'), 'Call Mum'),
       click(role('button', { name: 'Add' })),
       expect(text('Call Mum')).toExist(),
@@ -45,7 +29,7 @@ describe('Todo Foldkit Scene', () => {
   it('toggles and deletes by accessible name', () => {
     scene(
       { update: updateTodoWeb, view: viewTodoWeb },
-      sceneWith(ready([milk])),
+      given(ready([milk])),
       click(role('checkbox', { name: 'Mark Buy milk complete' })),
       expect(role('checkbox', { checked: true })).toExist(),
       Command.resolve(SaveTodosCommand, todosSaved()),
@@ -58,7 +42,7 @@ describe('Todo Foldkit Scene', () => {
   it('edits a reminder inline', () => {
     scene(
       { update: updateTodoWeb, view: viewTodoWeb },
-      sceneWith(ready([milk])),
+      given(ready([milk])),
       click(role('button', { name: 'Edit Buy milk' })),
       type(label('Edit Buy milk'), 'Buy oat milk'),
       click(role('button', { name: 'Save' })),
@@ -70,7 +54,7 @@ describe('Todo Foldkit Scene', () => {
   it('renders load failure recovery semantically', () => {
     scene(
       { update: updateTodoWeb, view: viewTodoWeb },
-      sceneWith({
+      given({
         ...initialTodoModel(),
         loadState: { _tag: 'Failed', reason: 'offline' },
       }),

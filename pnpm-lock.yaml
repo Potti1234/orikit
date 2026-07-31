@@ -107,12 +107,12 @@ importers:
         specifier: 4.0.0-beta.102
         version: 4.0.0-beta.102
       foldkit:
-        specifier: 0.134.0
-        version: 0.134.0(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102)
+        specifier: file:../../artifacts/foldkit-local/foldkit-0.137.0.tgz
+        version: file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102)
     devDependencies:
       '@foldkit/vite-plugin':
         specifier: 0.11.2
-        version: 0.11.2(effect@4.0.0-beta.102)(foldkit@0.134.0(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102))(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 0.11.2(effect@4.0.0-beta.102)(foldkit@file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102))(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -317,6 +317,9 @@ importers:
       '@orikit/devtools-runtime':
         specifier: workspace:*
         version: link:../devtools-runtime
+      '@orikit/foldkit-runtime-adapter':
+        specifier: workspace:*
+        version: link:../foldkit-runtime-adapter
       '@orikit/runtime':
         specifier: workspace:*
         version: link:../runtime
@@ -326,6 +329,9 @@ importers:
       effect:
         specifier: 4.0.0-beta.102
         version: 4.0.0-beta.102
+      foldkit:
+        specifier: file:../../artifacts/foldkit-local/foldkit-0.137.0.tgz
+        version: file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102)
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -676,6 +682,7 @@ packages:
 
   '@foldkit/vite-plugin@0.11.2':
     resolution: {integrity: sha512-u0xgCUVOxFk35tulud29nS/Wsdb2hK5C2SA/YxXUWnwipFZvVpkCrqelAGst0g9TcAoGNZ1RAxD9p72ruVQT1Q==}
+    version: 0.11.2
     engines: {node: '>=18.0.0'}
     peerDependencies:
       effect: 4.0.0-beta.102
@@ -2199,13 +2206,6 @@ packages:
 
   flatted@3.4.3:
     resolution: {integrity: sha512-/zipXxyO6rGvuNGDiULY9MvEGSkb2gaG4GGH4ygMi0ZZzyMHdUZBmntJmx5x1G2VuPytCwGN4xsJP6cw+sK+vQ==}
-
-  foldkit@0.134.0:
-    resolution: {integrity: sha512-3I1grOiwML3JlmZKX45ILmnhFvGxeZMdAsvX5yWfVFQ2Inbatrnz/ISqXQcI7NAUPJjBZuRJrMS3F8xSmCGovw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@effect/platform-browser': 4.0.0-beta.102
-      effect: 4.0.0-beta.102
 
   foldkit@file:artifacts/foldkit-local/foldkit-0.137.0.tgz:
     resolution: {integrity: sha512-E11F1BVZSQpRawraLemyYOBmNvS8/+6uZLTYILOZTALmKbCfmdjGA/Iur6BASw5viS+aOgD5+77k+ifMylLiPA==, tarball: file:artifacts/foldkit-local/foldkit-0.137.0.tgz}
@@ -4490,10 +4490,10 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@foldkit/vite-plugin@0.11.2(effect@4.0.0-beta.102)(foldkit@0.134.0(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102))(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))':
+  '@foldkit/vite-plugin@0.11.2(effect@4.0.0-beta.102)(foldkit@file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102))(vite@8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
       effect: 4.0.0-beta.102
-      foldkit: 0.134.0(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102)
+      foldkit: file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102)
       magic-string: 0.30.21
       vite: 8.1.5(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.102.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
       ws: 8.21.1
@@ -6207,11 +6207,6 @@ snapshots:
   flat@5.0.2: {}
 
   flatted@3.4.3: {}
-
-  foldkit@0.134.0(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102):
-    dependencies:
-      '@effect/platform-browser': 4.0.0-beta.102(effect@4.0.0-beta.102)
-      effect: 4.0.0-beta.102
 
   foldkit@file:artifacts/foldkit-local/foldkit-0.137.0.tgz(@effect/platform-browser@4.0.0-beta.102(effect@4.0.0-beta.102))(effect@4.0.0-beta.102):
     dependencies:

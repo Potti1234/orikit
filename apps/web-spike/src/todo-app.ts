@@ -2,24 +2,17 @@ import {
   createInMemoryTodoStorage,
   draftChanged,
   editDraftChanged,
-  interpretTodoCommand,
-  loadTodos,
+  initTodo,
+  LoadTodos,
   presentTodo,
-  saveTodos,
-  Todo,
-  type TodoCommand,
+  provideTodoStorage,
+  SaveTodos,
   type TodoMessage,
   type TodoModel as TodoModelType,
   type TodoPresentation,
   type TodoPresentationRow,
-  TodosLoaded,
-  TodosLoadFailed,
-  TodosSaved,
-  TodosSaveFailed,
-  todoProgram,
+  updateTodo,
 } from '@orikit/todo'
-import { Effect, Schema } from 'effect'
-import { Command } from 'foldkit'
 import type { Document, Html, HtmlBuilder } from 'foldkit/html'
 
 const storage = createInMemoryTodoStorage([
@@ -30,35 +23,13 @@ const storage = createInMemoryTodoStorage([
   },
 ])
 
-export const LoadTodosCommand = Command.define(
-  'LoadTodos',
-  TodosLoaded,
-  TodosLoadFailed,
-)(Effect.promise(() => interpretTodoCommand(loadTodos(), storage)))
+export const LoadTodosCommand = LoadTodos
+export const SaveTodosCommand = SaveTodos
 
-export const SaveTodosCommand = Command.define(
-  'SaveTodos',
-  { todos: Schema.Array(Todo) },
-  TodosSaved,
-  TodosSaveFailed,
-)(({ todos }) => Effect.promise(() => interpretTodoCommand(saveTodos(todos), storage)))
-
-const adaptCommand = (command: TodoCommand) => {
-  switch (command._tag) {
-    case 'LoadTodos':
-      return LoadTodosCommand()
-    case 'SaveTodos':
-      return SaveTodosCommand({ todos: command.todos })
-  }
-}
-
-const adapt = (transition: readonly [TodoModelType, ReadonlyArray<TodoCommand>]) =>
-  [transition[0], transition[1].map(adaptCommand)] as const
-
-export const initTodoWeb = () => adapt(todoProgram.init({}))
+export const initTodoWeb = () => provideTodoStorage(initTodo(), storage)
 
 export const updateTodoWeb = (model: TodoModelType, message: TodoMessage) =>
-  adapt(todoProgram.update(model, message))
+  provideTodoStorage(updateTodo(model, message), storage)
 
 const todoRow = (
   todo: TodoPresentationRow,

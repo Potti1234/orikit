@@ -4,7 +4,6 @@ import {
   type DevtoolsSnapshot,
 } from '@orikit/devtools-runtime'
 import {
-  createProductionRuntime,
   type ManagedResourceEvent,
   type ManagedResourceState,
   type ManagedRuntime,
@@ -17,32 +16,25 @@ import {
   type SubscriptionDefinition,
   withManagedResources,
 } from '@orikit/runtime'
-
-import { type TodoCommand, type TodoMessage, type TodoModel, todoProgram } from './program'
 import {
-  createInMemoryTodoStorage,
-  type InMemoryTodoStorage,
-  interpretTodoCommand,
-  type TodoStorage,
-} from './storage'
+  createFoldKitProductionRuntime,
+  type FoldKitCommandDescription,
+} from '@orikit/foldkit-runtime-adapter'
 
-type Runtime = ManagedRuntime<TodoModel, TodoMessage, TodoCommand>
+import { createTodoProgramAdapter, type TodoMessage, type TodoModel, todoProgram } from './program'
+import { createInMemoryTodoStorage, type InMemoryTodoStorage, type TodoStorage } from './storage'
 
-const cancelled = (): Error => {
-  const error = new Error('Todo command was cancelled')
-  error.name = 'AbortError'
-  return error
-}
+type Runtime = ManagedRuntime<TodoModel, TodoMessage, FoldKitCommandDescription>
 
 export type TodoApplication = Readonly<{
   dispatch: (message: TodoMessage) => void
   current: () => TodoModel
-  snapshot: () => RuntimeSnapshot<TodoModel, TodoCommand>
+  snapshot: () => RuntimeSnapshot<TodoModel, FoldKitCommandDescription>
   subscribe: (observer: (model: TodoModel) => void) => () => void
   subscribeInspection: (observer: (snapshot: DevtoolsSnapshot<TodoModel>) => void) => () => void
   devtools: () => DevtoolsHistory<TodoModel> | undefined
   status: () => RuntimeStatus
-  events: () => ReadonlyArray<RuntimeEvent<TodoMessage, TodoCommand>>
+  events: () => ReadonlyArray<RuntimeEvent<TodoMessage, FoldKitCommandDescription>>
   metrics: () => RuntimeMetrics
   managedResources: () => ReadonlyArray<ManagedResourceState>
   managedResourceEvents: () => ReadonlyArray<ManagedResourceEvent>
@@ -61,15 +53,8 @@ export type TodoApplicationOptions = Readonly<{
 export const createTodoApplication = (options: TodoApplicationOptions = {}): TodoApplication => {
   const storage = options.storage ?? createInMemoryTodoStorage()
   const runtime: Runtime = withManagedResources(
-    createProductionRuntime({
-      program: todoProgram,
+    createFoldKitProductionRuntime(createTodoProgramAdapter(storage), {
       flags: {},
-      interpret: async (command, { signal }) => {
-        if (signal.aborted) throw cancelled()
-        const completion = await interpretTodoCommand(command, storage)
-        if (signal.aborted) throw cancelled()
-        return completion
-      },
     }),
     {
       ...(options.subscriptions === undefined ? {} : { subscriptions: options.subscriptions }),

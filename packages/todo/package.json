@@ -13,9 +13,11 @@
   },
   "dependencies": {
     "@orikit/devtools-runtime": "workspace:*",
+    "@orikit/foldkit-runtime-adapter": "workspace:*",
     "@orikit/runtime": "workspace:*",
     "@orikit/spike-core": "workspace:*",
-    "effect": "4.0.0-beta.102"
+    "effect": "4.0.0-beta.102",
+    "foldkit": "file:../../artifacts/foldkit-local/foldkit-0.137.0.tgz"
   },
   "devDependencies": {
     "typescript": "5.9.3",

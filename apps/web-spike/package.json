@@ -16,7 +16,7 @@
     "@orikit/spike-trace": "workspace:*",
     "@orikit/todo": "workspace:*",
     "effect": "4.0.0-beta.102",
-    "foldkit": "0.134.0"
+    "foldkit": "file:../../artifacts/foldkit-local/foldkit-0.137.0.tgz"
   },
   "devDependencies": {
     "@foldkit/vite-plugin": "0.11.2",

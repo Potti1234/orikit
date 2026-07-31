@@ -1,11 +1,6 @@
-import {
-  defineCommandContract,
-  defineProgram,
-  type Transition,
-  tagged,
-  transition,
-} from '@orikit/spike-core'
-import { Schema } from 'effect'
+import { defineFoldKitProgramAdapter } from '@orikit/foldkit-runtime-adapter'
+import { Context, Effect, Schema } from 'effect'
+import { Command, Message, type Update } from 'foldkit/portable'
 
 export const Todo = Schema.Struct({
   id: Schema.String,
@@ -41,30 +36,24 @@ export type TodoModel = typeof TodoModel.Type
 export const TodoFlags = Schema.Struct({})
 export type TodoFlags = typeof TodoFlags.Type
 
-const DraftChanged = Schema.TaggedStruct('DraftChanged', { value: Schema.String })
-const AddRequested = Schema.TaggedStruct('AddRequested', {})
-const EditRequested = Schema.TaggedStruct('EditRequested', { id: Schema.String })
-const EditDraftChanged = Schema.TaggedStruct('EditDraftChanged', { value: Schema.String })
-const EditCommitted = Schema.TaggedStruct('EditCommitted', {})
-const EditCancelled = Schema.TaggedStruct('EditCancelled', {})
-const ToggleRequested = Schema.TaggedStruct('ToggleRequested', { id: Schema.String })
-const DeleteRequested = Schema.TaggedStruct('DeleteRequested', { id: Schema.String })
-const LoadRequested = Schema.TaggedStruct('LoadRequested', {})
-const SaveRetried = Schema.TaggedStruct('SaveRetried', {})
-const MotionObserved = Schema.TaggedStruct('MotionObserved', { magnitude: Schema.Number })
-export const TodosLoaded = Schema.TaggedStruct('TodosLoaded', {
-  todos: Schema.Array(Todo),
-})
+export const DraftChanged = Message.m('DraftChanged', { value: Schema.String })
+export const AddRequested = Message.m('AddRequested')
+export const EditRequested = Message.m('EditRequested', { id: Schema.String })
+export const EditDraftChanged = Message.m('EditDraftChanged', { value: Schema.String })
+export const EditCommitted = Message.m('EditCommitted')
+export const EditCancelled = Message.m('EditCancelled')
+export const ToggleRequested = Message.m('ToggleRequested', { id: Schema.String })
+export const DeleteRequested = Message.m('DeleteRequested', { id: Schema.String })
+export const LoadRequested = Message.m('LoadRequested')
+export const SaveRetried = Message.m('SaveRetried')
+export const MotionObserved = Message.m('MotionObserved', { magnitude: Schema.Number })
+export const TodosLoaded = Message.m('TodosLoaded', { todos: Schema.Array(Todo) })
 export type TodosLoaded = typeof TodosLoaded.Type
-export const TodosLoadFailed = Schema.TaggedStruct('TodosLoadFailed', {
-  reason: Schema.String,
-})
+export const TodosLoadFailed = Message.m('TodosLoadFailed', { reason: Schema.String })
 export type TodosLoadFailed = typeof TodosLoadFailed.Type
-export const TodosSaved = Schema.TaggedStruct('TodosSaved', {})
+export const TodosSaved = Message.m('TodosSaved')
 export type TodosSaved = typeof TodosSaved.Type
-export const TodosSaveFailed = Schema.TaggedStruct('TodosSaveFailed', {
-  reason: Schema.String,
-})
+export const TodosSaveFailed = Message.m('TodosSaveFailed', { reason: Schema.String })
 export type TodosSaveFailed = typeof TodosSaveFailed.Type
 
 export const TodoMessage = Schema.Union([
@@ -78,44 +67,79 @@ export const TodoMessage = Schema.Union([
   DeleteRequested,
   LoadRequested,
   SaveRetried,
+  MotionObserved,
   TodosLoaded,
   TodosLoadFailed,
   TodosSaved,
   TodosSaveFailed,
-  MotionObserved,
 ])
 export type TodoMessage = typeof TodoMessage.Type
 
-export const LoadTodos = Schema.TaggedStruct('LoadTodos', {})
-export type LoadTodos = typeof LoadTodos.Type
-export const SaveTodos = Schema.TaggedStruct('SaveTodos', { todos: Schema.Array(Todo) })
-export type SaveTodos = typeof SaveTodos.Type
+export const draftChanged = (value: string): TodoMessage => DraftChanged({ value })
+export const addRequested = (): TodoMessage => AddRequested()
+export const editRequested = (id: string): TodoMessage => EditRequested({ id })
+export const editDraftChanged = (value: string): TodoMessage => EditDraftChanged({ value })
+export const editCommitted = (): TodoMessage => EditCommitted()
+export const editCancelled = (): TodoMessage => EditCancelled()
+export const toggleRequested = (id: string): TodoMessage => ToggleRequested({ id })
+export const deleteRequested = (id: string): TodoMessage => DeleteRequested({ id })
+export const loadRequested = (): TodoMessage => LoadRequested()
+export const saveRetried = (): TodoMessage => SaveRetried()
+export const motionObserved = (magnitude: number): TodoMessage => MotionObserved({ magnitude })
+export const todosLoaded = (todos: ReadonlyArray<Todo>): TodosLoaded => TodosLoaded({ todos })
+export const todosLoadFailed = (reason: string): TodosLoadFailed => TodosLoadFailed({ reason })
+export const todosSaved = (): TodosSaved => TodosSaved()
+export const todosSaveFailed = (reason: string): TodosSaveFailed => TodosSaveFailed({ reason })
 
-export const TodoCommand = Schema.Union([LoadTodos, SaveTodos])
-export type TodoCommand = typeof TodoCommand.Type
+export type TodoStorage = Readonly<{
+  load: () => Promise<ReadonlyArray<Todo>>
+  save: (todos: ReadonlyArray<Todo>) => Promise<void>
+}>
 
-export const loadTodos = (): LoadTodos => tagged('LoadTodos')
-export const saveTodos = (todos: ReadonlyArray<Todo>): SaveTodos => tagged('SaveTodos', { todos })
-export const draftChanged = (value: string): TodoMessage => tagged('DraftChanged', { value })
-export const addRequested = (): TodoMessage => tagged('AddRequested')
-export const editRequested = (id: string): TodoMessage => tagged('EditRequested', { id })
-export const editDraftChanged = (value: string): TodoMessage =>
-  tagged('EditDraftChanged', { value })
-export const editCommitted = (): TodoMessage => tagged('EditCommitted')
-export const editCancelled = (): TodoMessage => tagged('EditCancelled')
-export const toggleRequested = (id: string): TodoMessage => tagged('ToggleRequested', { id })
-export const deleteRequested = (id: string): TodoMessage => tagged('DeleteRequested', { id })
-export const loadRequested = (): TodoMessage => tagged('LoadRequested')
-export const saveRetried = (): TodoMessage => tagged('SaveRetried')
-export const motionObserved = (magnitude: number): TodoMessage =>
-  tagged('MotionObserved', { magnitude })
-export const todosLoaded = (todos: ReadonlyArray<Todo>): TodosLoaded =>
-  tagged('TodosLoaded', { todos })
-export const todosLoadFailed = (reason: string): TodosLoadFailed =>
-  tagged('TodosLoadFailed', { reason })
-export const todosSaved = (): TodosSaved => tagged('TodosSaved')
-export const todosSaveFailed = (reason: string): TodosSaveFailed =>
-  tagged('TodosSaveFailed', { reason })
+export class TodoStorageService extends Context.Service<TodoStorageService, TodoStorage>()(
+  '@orikit/TodoStorage',
+) {}
+
+const messageFrom = (failure: unknown): string =>
+  failure instanceof Error ? failure.message : String(failure)
+
+export const LoadTodos = Command.define('LoadTodos', {
+  messages: [TodosLoaded, TodosLoadFailed],
+  execute: Effect.gen(function* () {
+    const storage = yield* TodoStorageService
+    return yield* Effect.promise(async () => {
+      try {
+        return todosLoaded(await storage.load())
+      } catch (failure) {
+        return todosLoadFailed(messageFrom(failure))
+      }
+    })
+  }),
+})
+export type LoadTodos = ReturnType<typeof LoadTodos>
+
+export const SaveTodos = Command.define('SaveTodos', {
+  args: { todos: Schema.Array(Todo) },
+  messages: [TodosSaved, TodosSaveFailed],
+  execute: ({ todos }) =>
+    Effect.gen(function* () {
+      const storage = yield* TodoStorageService
+      return yield* Effect.promise(async () => {
+        try {
+          await storage.save(todos)
+          return todosSaved()
+        } catch (failure) {
+          return todosSaveFailed(messageFrom(failure))
+        }
+      })
+    }),
+})
+export type SaveTodos = ReturnType<typeof SaveTodos>
+
+export type TodoCommand = LoadTodos | SaveTodos
+
+export const loadTodos = LoadTodos
+export const saveTodos = (todos: ReadonlyArray<Todo>): SaveTodos => SaveTodos({ todos })
 
 export const initialTodoModel = (): TodoModel => ({
   draft: '',
@@ -128,25 +152,20 @@ export const initialTodoModel = (): TodoModel => ({
   lastMotion: 0,
 })
 
-const unchanged = (model: TodoModel): Transition<TodoModel, TodoCommand> => transition(model)
+export type TodoUpdate = readonly [TodoModel, ReadonlyArray<TodoCommand>]
 
-const persist = (
-  model: TodoModel,
-  todos: ReadonlyArray<Todo>,
-): Transition<TodoModel, TodoCommand> =>
-  transition(
-    {
-      ...model,
-      todos,
-      saveState: { _tag: 'Saving' },
-    },
-    saveTodos(todos),
-  )
+const unchanged = (model: TodoModel): TodoUpdate => [model, []]
 
-export const updateTodo = (
-  model: TodoModel,
-  message: TodoMessage,
-): Transition<TodoModel, TodoCommand> => {
+const persist = (model: TodoModel, todos: ReadonlyArray<Todo>): TodoUpdate => [
+  {
+    ...model,
+    todos,
+    saveState: { _tag: 'Saving' },
+  },
+  [saveTodos(todos)],
+]
+
+export const updateTodo = (model: TodoModel, message: TodoMessage): TodoUpdate => {
   switch (message._tag) {
     case 'DraftChanged':
       return unchanged({ ...model, draft: message.value })
@@ -213,9 +232,15 @@ export const updateTodo = (
       return persist({ ...model, editor }, todos)
     }
     case 'LoadRequested':
-      return transition({ ...model, loadState: { _tag: 'Loading' } }, loadTodos())
+      return [{ ...model, loadState: { _tag: 'Loading' } }, [loadTodos()]]
     case 'SaveRetried':
-      return transition({ ...model, saveState: { _tag: 'Saving' } }, saveTodos(model.todos))
+      return [{ ...model, saveState: { _tag: 'Saving' } }, [saveTodos(model.todos)]]
+    case 'MotionObserved':
+      return unchanged({
+        ...model,
+        motionSamples: model.motionSamples + 1,
+        lastMotion: message.magnitude,
+      })
     case 'TodosLoaded':
       return unchanged({
         ...model,
@@ -234,29 +259,74 @@ export const updateTodo = (
         ...model,
         saveState: { _tag: 'Failed', reason: message.reason },
       })
-    case 'MotionObserved':
-      return unchanged({
-        ...model,
-        motionSamples: model.motionSamples + 1,
-        lastMotion: message.magnitude,
-      })
   }
 }
 
-export const todoProgram = defineProgram<TodoFlags, TodoModel, TodoMessage, TodoCommand>({
-  identity: {
-    name: 'todo',
-    schemaVersion: 3,
-    buildVersion: '0.0.0-phase8',
-  },
-  Flags: TodoFlags,
-  Model: TodoModel,
-  Message: TodoMessage,
-  Command: TodoCommand,
-  commandContract: defineCommandContract<TodoCommand, TodoMessage>({
-    LoadTodos: ['TodosLoaded', 'TodosLoadFailed'],
-    SaveTodos: ['TodosSaved', 'TodosSaveFailed'],
-  }),
-  init: () => transition(initialTodoModel(), loadTodos()),
-  update: updateTodo,
+const provideLoadStorage = (
+  command: LoadTodos,
+  storage: TodoStorage,
+): Command.Command<TodoMessage> => ({
+  ...command,
+  effect: Effect.provideService(command.effect, TodoStorageService, storage).pipe(
+    Effect.map((message): TodoMessage => message),
+  ),
 })
+
+const provideSaveStorage = (
+  command: SaveTodos,
+  storage: TodoStorage,
+): Command.Command<TodoMessage> => ({
+  ...command,
+  effect: Effect.provideService(command.effect, TodoStorageService, storage).pipe(
+    Effect.map((message): TodoMessage => message),
+  ),
+})
+
+export const provideTodoStorage = (
+  result: TodoUpdate,
+  storage: TodoStorage,
+): Update.Return<TodoModel, TodoMessage> => [
+  result[0],
+  result[1].map((command) =>
+    command.name === 'LoadTodos'
+      ? provideLoadStorage(command, storage)
+      : provideSaveStorage(command, storage),
+  ),
+]
+
+export const initTodo = (): TodoUpdate => [initialTodoModel(), [loadTodos()]]
+
+export const createTodoProgramAdapter = (storage: TodoStorage) =>
+  defineFoldKitProgramAdapter<TodoFlags, TodoModel, TodoMessage>({
+    identity: {
+      name: 'todo',
+      schemaVersion: 3,
+      buildVersion: '0.0.0-foldkit-portable',
+    },
+    Flags: TodoFlags,
+    Model: TodoModel,
+    Message: TodoMessage,
+    commands: {
+      LoadTodos: {
+        completions: ['TodosLoaded', 'TodosLoadFailed'],
+      },
+      SaveTodos: {
+        completions: ['TodosSaved', 'TodosSaveFailed'],
+      },
+    },
+    init: () => provideTodoStorage(initTodo(), storage),
+    update: (model, message) => provideTodoStorage(updateTodo(model, message), storage),
+  })
+
+const storyStorage: TodoStorage = {
+  load: async () => {
+    throw new Error('Story and replay must not execute Todo storage')
+  },
+  save: async () => {
+    throw new Error('Story and replay must not execute Todo storage')
+  },
+}
+
+export const todoProgramAdapter = createTodoProgramAdapter(storyStorage)
+export const todoProgram = todoProgramAdapter.program
+export const describeTodoCommand = todoProgramAdapter.describe
