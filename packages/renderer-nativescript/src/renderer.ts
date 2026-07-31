@@ -152,13 +152,15 @@ export const createNativeRenderer = <Message, View>(
         })
       }
     }
-    const localState = options.host.captureLocalState(mounted.view)
-    for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) {
-      if (!Object.is(before[name], after[name])) {
-        options.host.setProperty(mounted.view, name, after[name])
-      }
-    }
-    options.host.restoreLocalState(mounted.view, localState)
+    const changedNames = [...new Set([...Object.keys(before), ...Object.keys(after)])].filter(
+      (name) => !Object.is(before[name], after[name]),
+    )
+    const preservesLocalState = changedNames.includes('text')
+    const localState = preservesLocalState
+      ? options.host.captureLocalState(mounted.view)
+      : undefined
+    for (const name of changedNames) options.host.setProperty(mounted.view, name, after[name])
+    if (localState !== undefined) options.host.restoreLocalState(mounted.view, localState)
   }
 
   const disposeMounted = (mounted: MountedNode<Message, View>): void => {

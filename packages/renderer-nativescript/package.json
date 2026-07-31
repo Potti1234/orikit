@@ -5,11 +5,15 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./host": "./src/nativescript-host.ts"
   },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nativescript/core": "9.0.20"
   },
   "devDependencies": {
     "typescript": "5.9.3",
