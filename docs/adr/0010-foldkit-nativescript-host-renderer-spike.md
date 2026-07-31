@@ -4,9 +4,13 @@
 
 ## Status
 
-Proposed for a bounded local Phase 6 experiment on 2026-07-31. Not accepted as
-the production renderer, not approved for publication, and not verified on
-iOS.
+Accepted on 2026-07-31 with a revised implementation boundary. The experiment
+rejected direct reuse of Foldkit's Snabbdom patcher because its core contracts
+remain DOM-typed and extracting them would require the broad invasive Foldkit
+change named by the rejection conditions. OriKit instead owns the small
+host-neutral keyed reconciler and NativeScript registry. Foldkit supplies the
+portable program/runtime boundary. Android build and on-device startup passed;
+iOS remains `NOT_RUN`.
 
 ## Context and evidence
 
@@ -137,7 +141,6 @@ or regressions in input/list/replay correctness.
 Before acceptance, reversal removes the experimental package wiring and
 restores the existing Todo entry point. Model, Message, Command, Story,
 runtime, history, trace, web view, and portable-kernel work remain unchanged.
-
 
 
 

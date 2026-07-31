@@ -2,8 +2,9 @@
 
 # 23. FoldKit-to-NativeScript host renderer plan
 
-**Status:** proposed bounded Phase 6 experiment. No implementation is
-authorized by this document alone. Start only after reading
+**Status:** implemented through the reversible Android Todo cutover on
+2026-07-31, with the direct Snabbdom reuse hypothesis rejected. Remaining
+platform and stress gates are tracked in the evidence record. Start only after reading
 [ADR-0010](../adr/0010-foldkit-nativescript-host-renderer-spike.md) and the
 active repository handoff.
 
@@ -764,7 +765,6 @@ means:
 
 The experiment must not require Model, Message, Command, Story, history, or
 trace migrations, so reversal remains a renderer-only operation.
-
 
 
 
