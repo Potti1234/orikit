@@ -1,4 +1,10 @@
 import {
+  createPortableCounterRuntime,
+  IncrementedPortableCounter,
+  type PortableCounterRuntime,
+  verifyPortableCommand,
+} from '@orikit/foldkit-portable-spike'
+import {
   type CounterCommand,
   type CounterMessage,
   type CounterModel,
@@ -34,6 +40,7 @@ type CounterSnapshot = RuntimeSnapshot<CounterModel, CounterMessage, CounterComm
 let runtime: CounterRuntime | undefined
 let unsubscribe: (() => void) | undefined
 let activePage: Page | undefined
+let portableRuntime: PortableCounterRuntime | undefined
 const renderDurations: Array<number> = []
 
 const now = (): number => globalThis.performance?.now() ?? Date.now()
@@ -48,6 +55,13 @@ const requireRuntime = (): CounterRuntime => {
     throw new Error('Counter runtime is not initialized')
   }
   return runtime
+}
+
+const requirePortableRuntime = (): PortableCounterRuntime => {
+  if (portableRuntime === undefined) {
+    throw new Error('Foldkit portable runtime is not initialized')
+  }
+  return portableRuntime
 }
 
 const view = <ViewType>(page: Page, id: string): ViewType => {
@@ -120,6 +134,14 @@ const initializeEvidence = async (counterRuntime: CounterRuntime): Promise<void>
   counterRuntime.dispatch(deviceInfoLoaded(platform.deviceModel, platform.sdk))
   counterRuntime.dispatch(nativeGreetingLoaded(platform.nativeGreeting))
 
+  const portableCommand = await verifyPortableCommand(requirePortableRuntime())
+  console.log(
+    `FOLDKIT_PORTABLE_READY:${JSON.stringify({
+      portableCommand,
+      portableCount: requirePortableRuntime().current().count,
+    })}`,
+  )
+
   const effect = await runEffectCompatibilityChecks('android')
   const checks = Object.values(effect.checks)
   const passed = checks.filter((check) => check.status === 'pass').length
@@ -146,6 +168,8 @@ const initializeEvidence = async (counterRuntime: CounterRuntime): Promise<void>
       effectTotal: checks.length,
       finalModelFingerprint: fixture.finalModelFingerprint,
       nativeGreeting: platform.nativeGreeting,
+      portableCommand,
+      portableCount: requirePortableRuntime().current().count,
       sdk: platform.sdk,
     })}`,
   )
@@ -159,6 +183,12 @@ export function onNavigatingTo(args: NavigatedData): void {
     initialModel: initialCounterModel(),
     decodeMessage: decodeCounterMessage,
     update: updateCounter,
+  })
+  portableRuntime = createPortableCounterRuntime()
+  portableRuntime.subscribe((snapshot) => {
+    const portableCount = view<Label>(page, 'portable-count')
+    portableCount.text = String(snapshot.model.count)
+    portableCount.accessibilityLabel = `Foldkit portable counter value ${snapshot.model.count}`
   })
   unsubscribe = runtime.subscribe((snapshot) => render(page, snapshot))
   void initializeEvidence(runtime)
@@ -185,6 +215,13 @@ export function onReset(_args: EventData): void {
   }
 }
 
+export function onPortableIncrement(_args: EventData): void {
+  const counterRuntime = requirePortableRuntime()
+  if (counterRuntime.status()._tag === 'Running') {
+    counterRuntime.dispatch(IncrementedPortableCounter())
+  }
+}
+
 export function onResume(_args: EventData): void {
   requireRuntime().resume()
   console.log(
@@ -200,8 +237,10 @@ export function onResume(_args: EventData): void {
 export function onUnloaded(): void {
   unsubscribe?.()
   runtime?.dispose()
+  portableRuntime?.dispose()
   unsubscribe = undefined
   runtime = undefined
+  portableRuntime = undefined
   activePage = undefined
   renderDurations.length = 0
 }

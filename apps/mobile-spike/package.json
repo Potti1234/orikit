@@ -11,6 +11,7 @@
     "android:run": "ns run android --no-hmr --pnpm"
   },
   "dependencies": {
+    "@orikit/foldkit-portable-spike": "workspace:*",
     "@orikit/spike-core": "workspace:*",
     "@orikit/spike-trace": "workspace:*",
     "@orikit/location": "workspace:*",

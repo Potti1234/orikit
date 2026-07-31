@@ -279,6 +279,10 @@ export function onOpenLocation(_args: EventData): void {
   Frame.topmost().navigate('location/location-page')
 }
 
+export function onOpenPortableKernel(_args: EventData): void {
+  Frame.topmost().navigate('home/home-page')
+}
+
 export function onResumeLive(_args: EventData): void {
   application?.devtools()?.resumeLive()
 }

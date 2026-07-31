@@ -23,6 +23,7 @@
     "verify:android": "pnpm --filter @orikit/mobile-spike android:build",
     "verify:android:device": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/feasibility/verify-android-device.ps1",
     "verify:android:todo:device": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/phase3/verify-todo-android.ps1",
+    "verify:android:foldkit-portable:device": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/foldkit-portable/verify-android-device.ps1",
     "verify:docs": "tsx tools/verify-docs.mts",
     "evidence:node": "tsx tools/feasibility/run-node.mts",
     "evidence:runtime": "tsx tools/phase4/run-runtime-benchmark.mts",

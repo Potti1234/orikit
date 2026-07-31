@@ -51,6 +51,9 @@ importers:
       '@orikit/devtools-protocol':
         specifier: workspace:*
         version: link:../../packages/devtools-protocol
+      '@orikit/foldkit-portable-spike':
+        specifier: workspace:*
+        version: link:../../packages/foldkit-portable-spike
       '@orikit/location':
         specifier: workspace:*
         version: link:../../packages/location
@@ -94,6 +97,9 @@ importers:
       '@effect/platform-browser':
         specifier: 4.0.0-beta.102
         version: 4.0.0-beta.102(effect@4.0.0-beta.102)
+      '@orikit/foldkit-portable-spike':
+        specifier: workspace:*
+        version: link:../../packages/foldkit-portable-spike
       '@orikit/spike-core':
         specifier: workspace:*
         version: link:../../packages/spike-core

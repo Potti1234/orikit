@@ -23,6 +23,10 @@
             <Label id="greeting" class="evidence" text="Kotlin: loading…" textWrap="true" />
             <Label id="effect" class="evidence" text="Effect checks: running…" textWrap="true" />
             <Label id="trace" class="evidence" text="Canonical trace: preparing…" textWrap="true" />
+            <Label class="section-title" text="REAL FOLDKIT PORTABLE API" />
+            <Label class="evidence" text="Message + Update + Command · NativeScript host" textWrap="true" />
+            <Label id="portable-count" class="count" text="0" accessibilityLabel="Foldkit portable counter value 0" />
+            <Button id="portable-increment" text="Increment Foldkit portable counter" tap="onPortableIncrement" accessibilityLabel="Increment Foldkit portable counter" />
         </StackLayout>
     </ScrollView>
 </Page>

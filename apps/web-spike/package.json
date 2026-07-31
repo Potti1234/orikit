@@ -13,6 +13,7 @@
   "dependencies": {
     "@effect/platform-browser": "4.0.0-beta.102",
     "@orikit/spike-core": "workspace:*",
+    "@orikit/foldkit-portable-spike": "workspace:*",
     "@orikit/spike-trace": "workspace:*",
     "@orikit/todo": "workspace:*",
     "effect": "4.0.0-beta.102",

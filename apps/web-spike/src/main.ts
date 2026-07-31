@@ -1,3 +1,4 @@
+import { runPortableCounterFixture } from '@orikit/foldkit-portable-spike'
 import { canonicalTodoTrace, runTodoFixture } from '@orikit/spike-trace'
 import { TodoModel } from '@orikit/todo'
 import { Runtime } from 'foldkit'
@@ -10,6 +11,7 @@ declare global {
     __ORIKIT_TODO_RESULT__?: Readonly<{
       trace: ReturnType<typeof runTodoFixture>
       canonicalTrace: string
+      portableKernel: ReturnType<typeof runPortableCounterFixture>
     }>
   }
 }
@@ -28,4 +30,5 @@ Runtime.run(application)
 window.__ORIKIT_TODO_RESULT__ = {
   trace: runTodoFixture(),
   canonicalTrace: canonicalTodoTrace(),
+  portableKernel: runPortableCounterFixture(),
 }
