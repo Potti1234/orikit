@@ -67,6 +67,11 @@ The second option is a decision gate, not a Phase 0 assumption.
 | [18](18-references.md) | Primary research sources |
 | [19](19-phase2-portable-api.md) | Implemented Phase 2 Program, Story, trace, and replay API |
 | [20](20-phase9-view-boundary.md) | Accepted web/native sharing boundary and migration guide |
+| [21](21-foldkit-portable-kernel-plan.md) | Foldkit portable-kernel experiment and decision gates |
+| [22](22-live-command-runtime-rewrite.md) | Live Foldkit Command scheduling boundary |
+| [23](23-nativescript-renderer-adapter-study.md) | NativeScript framework-adapter research |
+| [24](24-foldkit-nativescript-renderer-plan.md) | Proposed Foldkit NativeScript host renderer |
+| [25](25-native-renderer-verification-plan.md) | Proposed host-renderer verification matrix |
 | [Phase 3 evidence](../evidence/phase3-todo-vertical-slice.md) | Implemented Todo web/Android slice and device results |
 | [Phase 4 evidence](../evidence/phase4-production-runtime.md) | Production dispatch and Command supervision evidence |
 | [Phase 5 evidence](../evidence/phase5-native-location.md) | Android location capability and lifecycle evidence |
@@ -108,3 +113,9 @@ Phases 5 through 9 are implemented and verified on the Windows/Android lanes.
 Phase 9 keeps Foldkit web views separate while sharing portable behavior,
 presentation projections, and Android/iOS native semantics. Phase 10 is the
 first macOS/Xcode iOS bring-up.
+
+The Foldkit portable-kernel experiment is integrated after Phase 9. It adds a
+browser-independent `foldkit/portable` entry point, executes original Foldkit
+Command Effects through OriKit's supervised runtime, and preserves serialized
+history and effect-free replay. The proposed Foldkit NativeScript host renderer
+remains a separate, unimplemented experiment.
