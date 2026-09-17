@@ -8,20 +8,23 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "android:build": "ns build android --no-hmr --pnpm",
-    "android:run": "ns run android --no-hmr --pnpm"
+    "android:run": "ns run android --no-hmr --pnpm",
+    "ios:build": "ns build ios --emulator --no-hmr --pnpm",
+    "ios:run": "ns run ios --emulator --no-hmr --pnpm"
   },
   "dependencies": {
+    "@nativescript/core": "9.0.20",
+    "@nativescript/theme": "3.1.0",
+    "@orikit/devtools-protocol": "workspace:*",
+    "@orikit/location": "workspace:*",
+    "@orikit/renderer-nativescript": "workspace:*",
     "@orikit/spike-core": "workspace:*",
     "@orikit/spike-trace": "workspace:*",
-    "@orikit/location": "workspace:*",
-    "@orikit/devtools-protocol": "workspace:*",
-    "@orikit/renderer-nativescript": "workspace:*",
-    "@orikit/todo": "workspace:*",
-    "@nativescript/core": "9.0.20",
-    "@nativescript/theme": "3.1.0"
+    "@orikit/todo": "workspace:*"
   },
   "devDependencies": {
     "@nativescript/android": "9.0.5",
+    "@nativescript/ios": "9.1.0",
     "@nativescript/types": "9.0.0",
     "@nativescript/types-android": "9.0.0",
     "@nativescript/types-ios": "9.0.0",

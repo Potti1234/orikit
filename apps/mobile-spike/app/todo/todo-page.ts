@@ -25,9 +25,10 @@ import {
   type TodoMessage,
   type TodoModel,
 } from '@orikit/todo'
+import { platformTag } from '../home/platform-capabilities'
 import { connectTodoDevtools, type TodoDevtoolsClient } from './devtools-client'
-import { androidMotionSubscription } from './motion-subscription'
-import { patchTextFieldText } from './native-text-field.android'
+import { platformMotionSubscription } from './motion-subscription'
+import { patchTextFieldText } from './native-text-field'
 import { describeTodoNativeView, type TodoNativeRow, type TodoNativeView } from './native-view'
 
 let application: TodoApplication | undefined
@@ -143,7 +144,7 @@ const logEvidence = async (todoApplication: TodoApplication): Promise<void> => {
   const trace = canonicalTodoTrace()
   const parts = trace.match(/.{1,600}/g) ?? []
   for (const [index, part] of parts.entries()) {
-    console.log(`ORIKIT_TODO_TRACE_ANDROID:${index + 1}/${parts.length}:${part}`)
+    console.log(`ORIKIT_TODO_TRACE_${platformTag}:${index + 1}/${parts.length}:${part}`)
   }
   const fixture = runTodoFixture()
   const runtimeSnapshot = todoApplication.snapshot()
@@ -205,7 +206,7 @@ export function onNavigatingTo(args: NavigatedData): void {
   application = createTodoApplication({
     storage,
     devtools: { enabled: true },
-    subscriptions: [androidMotionSubscription()],
+    subscriptions: [platformMotionSubscription()],
   })
   application.reportLifecycle('Launched')
   application.reportLifecycle('BecameActive')

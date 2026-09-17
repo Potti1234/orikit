@@ -2,7 +2,7 @@ import { Application } from '@nativescript/core'
 import type { SubscriptionDefinition } from '@orikit/runtime'
 import { motionObserved, type TodoMessage, type TodoModel } from '@orikit/todo'
 
-export const androidMotionSubscription = (): SubscriptionDefinition<TodoModel, TodoMessage> => ({
+export const platformMotionSubscription = (): SubscriptionDefinition<TodoModel, TodoMessage> => ({
   id: 'android.accelerometer',
   key: () => 'normal',
   start: (_model, context) => {

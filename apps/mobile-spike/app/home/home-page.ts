@@ -1,4 +1,12 @@
 import {
+  Button,
+  type EventData,
+  type Label,
+  type NavigatedData,
+  type Page,
+  type StackLayout,
+} from '@nativescript/core'
+import {
   type CounterCommand,
   type CounterMessage,
   type CounterModel,
@@ -17,16 +25,14 @@ import {
   updateCounter,
 } from '@orikit/spike-core'
 import { canonicalCounterTrace, runCounterFixture } from '@orikit/spike-trace'
-import {
-  Button,
-  type EventData,
-  type Label,
-  type NavigatedData,
-  type Page,
-  type StackLayout,
-} from '@nativescript/core'
 
-import { readPlatformEvidence, setPlatformButtonEnabled } from './platform-capabilities.android'
+import {
+  nativeLanguage,
+  platformId,
+  platformTag,
+  readPlatformEvidence,
+  setPlatformButtonEnabled,
+} from './platform-capabilities'
 
 type CounterRuntime = SpikeRuntime<CounterModel, CounterMessage, CounterCommand>
 type CounterSnapshot = RuntimeSnapshot<CounterModel, CounterMessage, CounterCommand>
@@ -76,12 +82,14 @@ const render = (page: Page, snapshot: CounterSnapshot): void => {
   const device = snapshot.visibleModel.device
   view<Label>(page, 'device').text =
     device._tag === 'Loaded'
-      ? `Direct Android API: ${device.model}, API ${device.sdk}`
-      : 'Android API: loading…'
+      ? `Direct platform API: ${device.model}, API ${device.sdk}`
+      : 'Platform API: loading…'
 
   const greeting = snapshot.visibleModel.greeting
   view<Label>(page, 'greeting').text =
-    greeting._tag === 'Loaded' ? `Kotlin: ${greeting.value}` : 'Kotlin: loading…'
+    greeting._tag === 'Loaded'
+      ? `${nativeLanguage}: ${greeting.value}`
+      : `${nativeLanguage}: loading…`
 
   const compatibility = snapshot.visibleModel.compatibility
   view<Label>(page, 'effect').text =
@@ -120,7 +128,7 @@ const initializeEvidence = async (counterRuntime: CounterRuntime): Promise<void>
   counterRuntime.dispatch(deviceInfoLoaded(platform.deviceModel, platform.sdk))
   counterRuntime.dispatch(nativeGreetingLoaded(platform.nativeGreeting))
 
-  const effect = await runEffectCompatibilityChecks('android')
+  const effect = await runEffectCompatibilityChecks(platformId)
   const checks = Object.values(effect.checks)
   const passed = checks.filter((check) => check.status === 'pass').length
   counterRuntime.dispatch(compatibilityCompleted(passed, checks.length))
@@ -133,12 +141,12 @@ const initializeEvidence = async (counterRuntime: CounterRuntime): Promise<void>
       `Canonical trace: ${fixture.events.length} events · ${fixture.finalModelFingerprint.slice(0, 12)}…`
   }
 
-  console.log(`ORIKIT_EFFECT_ANDROID:${JSON.stringify(effect)}`)
-  // NativeScript routes console output through Android logcat, whose effective
-  // payload can be much smaller than logcat's nominal line limit.
+  console.log(`ORIKIT_EFFECT_${platformTag}:${JSON.stringify(effect)}`)
+  // NativeScript routes console output through the platform log, whose
+  // effective payload can be much smaller than the nominal line limit.
   const traceParts = trace.match(/.{1,600}/g) ?? []
   for (const [index, part] of traceParts.entries()) {
-    console.log(`ORIKIT_TRACE_ANDROID:${index + 1}/${traceParts.length}:${part}`)
+    console.log(`ORIKIT_TRACE_${platformTag}:${index + 1}/${traceParts.length}:${part}`)
   }
   console.log(
     `ORIKIT_READY:${JSON.stringify({
