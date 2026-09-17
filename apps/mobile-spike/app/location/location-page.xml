@@ -1,7 +1,7 @@
 <Page class="location-page" navigatingTo="onNavigatingTo" unloaded="onUnloaded" xmlns="http://schemas.nativescript.org/tns.xsd">
     <ActionBar class="location-bar" title="Native location" />
     <StackLayout class="location-screen" accessibilityLabel="Native location capability">
-        <Label class="location-eyebrow" text="PHASE 5 · ANDROID CAPABILITY" />
+        <Label class="location-eyebrow" text="PHASE 5 · NATIVE CAPABILITY" />
         <Label class="location-title" text="Location, without native state leaks" textWrap="true" />
         <Label class="location-copy" text="Permission and sensor callbacks become typed messages before they enter the portable program." textWrap="true" />
 
