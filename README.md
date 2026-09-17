@@ -129,7 +129,10 @@ platform themes and adapters. See the
 [migration guide](docs/nativescript/20-phase9-view-boundary.md), and
 [ADR-0008](docs/adr/0008-separate-web-shared-native-views.md).
 
-iOS remains unverified until the macOS/Xcode phase runs.
+iOS now builds, launches, and matches the canonical Todo trace on an iPhone
+simulator. See the
+[phase 10 iOS simulator evidence](docs/evidence/phase10-ios-simulator.md).
+Physical iPhone support remains unverified.
 
 ## License
 
