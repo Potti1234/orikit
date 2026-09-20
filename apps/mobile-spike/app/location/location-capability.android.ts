@@ -146,7 +146,7 @@ const readCurrentLocation = (signal: RuntimeAbortSignal): Promise<LocationResult
     manager.requestSingleUpdate(provider, listener, android.os.Looper.getMainLooper())
   })
 
-export const createAndroidLocationCapability = (): LocationCapability => ({
+export const createPlatformLocationCapability = (): LocationCapability => ({
   checkPermission: async (signal) => {
     signal.throwIfAborted()
     return classifyPermission()
@@ -154,3 +154,11 @@ export const createAndroidLocationCapability = (): LocationCapability => ({
   requestPermission,
   readCurrentLocation,
 })
+
+export const openApplicationSettings = (): void => {
+  const intent = new android.content.Intent(
+    android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+  )
+  intent.setData(android.net.Uri.parse(`package:${Application.android.packageName}`))
+  activity().startActivity(intent)
+}

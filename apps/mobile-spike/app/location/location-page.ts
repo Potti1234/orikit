@@ -14,7 +14,7 @@ import {
   permissionRequestRequested,
 } from '@orikit/location'
 
-import { createAndroidLocationCapability } from './location-capability.android'
+import { createPlatformLocationCapability, openApplicationSettings } from './location-capability'
 
 let application: LocationApplication | undefined
 let unsubscribe: (() => void) | undefined
@@ -34,7 +34,7 @@ const permissionText = (model: LocationModel): string => {
     case 'Unknown':
       return 'Unknown'
     case 'Checking':
-      return 'Checking Android permission…'
+      return 'Checking platform permission…'
     case 'Requesting':
       return 'Waiting for your choice…'
     case 'Granted':
@@ -51,7 +51,7 @@ const locationText = (model: LocationModel): string => {
     case 'Idle':
       return 'Not requested'
     case 'Locating':
-      return 'Waiting for one Android location fix…'
+      return 'Waiting for one platform location fix…'
     case 'Available':
       return `${model.location.fix.latitude.toFixed(5)}, ${model.location.fix.longitude.toFixed(5)} · ±${Math.round(model.location.fix.accuracyMeters)} m`
     case 'Failed':
@@ -111,7 +111,7 @@ const detachLifecycle = (): void => {
 export function onNavigatingTo(args: NavigatedData): void {
   onUnloaded()
   page = args.object as Page
-  application = createLocationApplication(createAndroidLocationCapability())
+  application = createLocationApplication(createPlatformLocationCapability())
   application.reportLifecycle('Launched')
   application.reportLifecycle('BecameActive')
   attachLifecycle()
@@ -127,19 +127,7 @@ export function onReadLocation(_args: EventData): void {
 }
 
 export function onOpenSettings(_args: EventData): void {
-  const intent = new android.content.Intent(
-    android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-  )
-  intent.setData(android.net.Uri.parse(`package:${Application.android.packageName}`))
-  activity().startActivity(intent)
-}
-
-const activity = (): android.app.Activity => {
-  const current = Application.android.foregroundActivity ?? Application.android.startActivity
-  if (current === undefined || current === null) {
-    throw new Error('No foreground Android activity is available')
-  }
-  return current
+  openApplicationSettings()
 }
 
 export function onUnloaded(): void {

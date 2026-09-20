@@ -2,7 +2,7 @@
     <ActionBar class="app-bar" title="OriKit spike" />
     <ScrollView>
         <StackLayout class="screen" accessibilityLabel="OriKit feasibility spike">
-            <Label class="eyebrow" text="ONE PURE UPDATE · NATIVE ANDROID UI" />
+            <Label class="eyebrow" text="ONE PURE UPDATE · NATIVE MOBILE UI" />
             <Label class="title" text="OriKit counter" textWrap="true" />
             <Label id="mode" class="mode" text="LIVE" accessibilityLabel="Runtime mode live" />
             <Label id="count" class="count" text="0" accessibilityLabel="Counter value 0" />
@@ -19,8 +19,8 @@
             <StackLayout id="history" class="history" accessibilityLabel="Runtime history" />
 
             <Label class="section-title" text="PLATFORM EVIDENCE" />
-            <Label id="device" class="evidence" text="Android API: loading…" textWrap="true" />
-            <Label id="greeting" class="evidence" text="Kotlin: loading…" textWrap="true" />
+            <Label id="device" class="evidence" text="Platform API: loading…" textWrap="true" />
+            <Label id="greeting" class="evidence" text="Native language: loading…" textWrap="true" />
             <Label id="effect" class="evidence" text="Effect checks: running…" textWrap="true" />
             <Label id="trace" class="evidence" text="Canonical trace: preparing…" textWrap="true" />
         </StackLayout>

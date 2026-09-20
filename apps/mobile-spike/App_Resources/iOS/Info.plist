@@ -20,6 +20,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>OriKit reads one location fix to demonstrate native capability messages.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>OriKit reads accelerometer samples to demonstrate native subscriptions.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

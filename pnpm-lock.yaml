@@ -70,6 +70,9 @@ importers:
       '@nativescript/android':
         specifier: 9.0.5
         version: 9.0.5
+      '@nativescript/ios':
+        specifier: 9.1.0
+        version: 9.1.0
       '@nativescript/types':
         specifier: 9.0.0
         version: 9.0.0
@@ -872,6 +875,9 @@ packages:
   '@nativescript/hook@3.0.5':
     resolution: {integrity: sha512-MzL7R/nPZU2qnvDWWuJ8RB7H3luEwANgFX/d/ILdg7bSYxl6uANCfzlueHnWgrQmBxu6dTkvPsFW2WNVUxlhUg==}
 
+  '@nativescript/ios@9.1.0':
+    resolution: {integrity: sha512-rdSmL+oOL+iyLYoSBM/cS0bOMAKzzOax6SpR4WmIHpmpa7TrFrrmzekuPSkwTZGeA7NTXnXD6K45rFvCHm6kOA==}
+
   '@nativescript/theme@3.1.0':
     resolution: {integrity: sha512-LTo0k/1HbwuFl9vTNfeOFtHuXf/BEVKROeaLZJbHX8U6DoUc+VprF46v6E9EFALOOPgxsgAJFtnEdOFDa26Ogw==}
 
@@ -1394,6 +1400,7 @@ packages:
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -4804,6 +4811,8 @@ snapshots:
       yauzl: 3.2.0
 
   '@nativescript/hook@3.0.5': {}
+
+  '@nativescript/ios@9.1.0': {}
 
   '@nativescript/theme@3.1.0': {}
 

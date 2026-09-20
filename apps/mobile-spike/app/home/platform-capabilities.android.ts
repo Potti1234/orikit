@@ -1,10 +1,17 @@
 import type { Button } from '@nativescript/core'
 
-import type { PlatformEvidence } from './platform-capabilities'
+import type { PlatformEvidence, PlatformId } from './platform-capabilities'
+
+export const platformId: PlatformId = 'android'
+
+export const platformTag = 'ANDROID'
+
+export const nativeLanguage = 'Kotlin'
 
 export const readPlatformEvidence = (): PlatformEvidence => {
   const greeting = new dev.orikit.device.NativeGreeting()
   return {
+    platform: 'android',
     deviceModel: String(android.os.Build.MODEL),
     sdk: android.os.Build.VERSION.SDK_INT,
     nativeGreeting: String(greeting.value()),

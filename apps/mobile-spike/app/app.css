@@ -27,7 +27,11 @@
   color: #6b5200;
 }
 
-.devtools-status { margin-bottom: 8; color: #6e6e73; font-size: 11; }
+.devtools-status {
+  margin-bottom: 8;
+  color: #6e6e73;
+  font-size: 11;
+}
 
 .todo-heading-title {
   font-size: 34;
@@ -147,19 +151,63 @@
   color: #17211b;
 }
 
-.location-screen { padding: 28 22; }
-.location-eyebrow { color: #477151; font-size: 11; font-weight: bold; }
-.location-title { margin-top: 10; font-size: 30; font-weight: bold; }
-.location-copy { margin-top: 10; color: #526158; font-size: 15; }
-.location-card { margin: 28 0 18; padding: 20; border-radius: 16; background-color: white; }
-.location-label { color: #6c786f; font-size: 12; font-weight: bold; }
-.location-value { margin-top: 5; color: #17211b; font-size: 18; }
-.location-space { margin-top: 20; }
+.location-screen {
+  padding: 28 22;
+}
+.location-eyebrow {
+  color: #477151;
+  font-size: 11;
+  font-weight: bold;
+}
+.location-title {
+  margin-top: 10;
+  font-size: 30;
+  font-weight: bold;
+}
+.location-copy {
+  margin-top: 10;
+  color: #526158;
+  font-size: 15;
+}
+.location-card {
+  margin: 28 0 18;
+  padding: 20;
+  border-radius: 16;
+  background-color: white;
+}
+.location-label {
+  color: #6c786f;
+  font-size: 12;
+  font-weight: bold;
+}
+.location-value {
+  margin-top: 5;
+  color: #17211b;
+  font-size: 18;
+}
+.location-space {
+  margin-top: 20;
+}
 .location-primary,
-.location-secondary { min-height: 50; margin: 5 0; border-radius: 12; font-weight: bold; }
-.location-primary { background-color: #30673f; color: white; }
-.location-secondary { background-color: white; color: #244d30; }
-.location-evidence { margin-top: 20; color: #6c786f; font-size: 12; }
+.location-secondary {
+  min-height: 50;
+  margin: 5 0;
+  border-radius: 12;
+  font-weight: bold;
+}
+.location-primary {
+  background-color: #30673f;
+  color: white;
+}
+.location-secondary {
+  background-color: white;
+  color: #244d30;
+}
+.location-evidence {
+  margin-top: 20;
+  color: #6c786f;
+  font-size: 12;
+}
 
 .app-page {
   background-color: #eff4ed;

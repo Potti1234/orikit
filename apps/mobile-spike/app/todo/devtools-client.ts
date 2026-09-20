@@ -5,6 +5,8 @@ import {
 } from '@orikit/devtools-protocol'
 import type { TodoApplication } from '@orikit/todo'
 
+import { connectDebugSocket } from './debug-socket'
+
 export type TodoDevtoolsClient = Readonly<{
   pairingCode: string
   status: () => 'Connecting' | 'Connected' | 'Disconnected'
@@ -25,7 +27,7 @@ export const connectTodoDevtools = (
   let opened = false
 
   const send = (envelope: RelayEnvelope): void => {
-    if (opened) client.send(JSON.stringify(envelope))
+    if (opened) socket.send(JSON.stringify(envelope))
   }
   const info = (paired: boolean) => ({ ...history.runtimeInfo(), paired })
   const publish = (): void => {
@@ -46,7 +48,7 @@ export const connectTodoDevtools = (
   const respond = (response: InspectorResponse): void =>
     send({ _tag: 'InspectorResponse', response })
 
-  const listener = new dev.orikit.device.DebugWebSocketListener({
+  const socket = connectDebugSocket('127.0.0.1', 4317, `/runtime?code=${code}`, {
     onOpen: () => {
       opened = true
       connection = 'Connected'
@@ -117,8 +119,6 @@ export const connectTodoDevtools = (
       }
     },
   })
-  const client = new dev.orikit.device.DebugWebSocketClient(listener)
-  client.connect('127.0.0.1', 4317, `/runtime?code=${code}`)
   const unsubscribe = history.subscribe(() => publish())
   onStatus(`Inspector connecting · pairing ${code}`)
   return {
@@ -126,7 +126,7 @@ export const connectTodoDevtools = (
     status: () => connection,
     dispose: () => {
       unsubscribe()
-      client.close()
+      socket.close()
     },
   }
 }
