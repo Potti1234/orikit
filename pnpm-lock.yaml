@@ -200,6 +200,12 @@ importers:
 
   packages/renderer-nativescript:
     devDependencies:
+      '@nativescript/core':
+        specifier: 9.0.20
+        version: 9.0.20
+      '@nativescript/types':
+        specifier: 9.0.0
+        version: 9.0.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3

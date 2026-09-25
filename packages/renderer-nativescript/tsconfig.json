@@ -5,7 +5,9 @@
     "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "skipLibCheck": true,
+    "noEmitHelpers": true
   },
   "include": ["src/**/*.ts"]
 }
