@@ -151,6 +151,18 @@ const setBool =
     ;(view as unknown as Record<string, unknown>)[name] = Boolean(value)
   }
 
+/* Writing a controlled prop (checked, selectedIndex, text, value) re-fires the
+ * platform's change event on several widgets, which re-dispatches the same
+ * message and can loop a render cycle. Skipping the write when the native
+ * value already matches keeps the set idempotent. */
+const setUnlessEqual =
+  (name: string): Apply =>
+  (view, value) => {
+    const record = view as unknown as Record<string, unknown>
+    const next = typeof value === 'boolean' ? Boolean(value) : (value ?? '')
+    if (record[name] !== next) record[name] = next
+  }
+
 const setGridCell =
   (setter: (view: View, value: number) => void): Apply =>
   (view, value) => {
@@ -279,7 +291,7 @@ const SHARED_PROPS: Readonly<Record<string, Apply>> = {
 }
 
 const TEXT_ENTRY_PROPS: Readonly<Record<string, Apply>> = {
-  text: setText('text'),
+  text: setUnlessEqual('text'),
   hint: setText('hint'),
   keyboardType: setView('keyboardType'),
   returnKeyType: setView('returnKeyType'),
@@ -338,9 +350,10 @@ const KIND_PROPS: Readonly<Record<NativeElementKind, Readonly<Record<string, App
   },
   TextView: {
     ...TEXT_ENTRY_PROPS,
+    textWrap: setBool('textWrap'),
   },
   SearchBar: {
-    text: setText('text'),
+    text: setUnlessEqual('text'),
     hint: setText('hint'),
     textFieldBackgroundColor: (view, value) => {
       ;(view as SearchBar).textFieldBackgroundColor = colorOf(value) as never
@@ -349,9 +362,9 @@ const KIND_PROPS: Readonly<Record<NativeElementKind, Readonly<Record<string, App
       ;(view as SearchBar).textFieldHintColor = colorOf(value) as never
     },
   },
-  Switch: { checked: setBool('checked') },
+  Switch: { checked: setUnlessEqual('checked') },
   Slider: {
-    value: setView('value'),
+    value: setUnlessEqual('value'),
     minValue: setView('minValue'),
     maxValue: setView('maxValue'),
   },
@@ -382,7 +395,7 @@ const KIND_PROPS: Readonly<Record<NativeElementKind, Readonly<Record<string, App
     items: (view, value) => {
       ;(view as ListPicker).items = (value as ReadonlyArray<unknown> | undefined)?.map(String) ?? []
     },
-    selectedIndex: setView('selectedIndex'),
+    selectedIndex: setUnlessEqual('selectedIndex'),
   },
   SegmentedBar: {
     items: (view, value) => {
@@ -396,7 +409,7 @@ const KIND_PROPS: Readonly<Record<NativeElementKind, Readonly<Record<string, App
         return entry
       })
     },
-    selectedIndex: setView('selectedIndex'),
+    selectedIndex: setUnlessEqual('selectedIndex'),
     selectedBackgroundColor: (view, value) => {
       ;(view as SegmentedBar).selectedBackgroundColor = colorOf(value) as never
     },
@@ -549,15 +562,17 @@ const KNOWN_EVENTS: ReadonlyArray<string> = [
 ]
 
 const isFocused = (view: View): boolean => {
-  const android = (view as { android?: { hasFocus?: () => boolean } }).android
-  if (android !== undefined) return android.hasFocus?.() === true
+  const android = (view as { android?: { hasFocus?: () => boolean } | null }).android
+  if (android != null) return android.hasFocus?.() === true
   const ios = (view as { ios?: { isFirstResponder?: boolean } }).ios
   return ios?.isFirstResponder === true
 }
 
 const insertChild = (parent: View, child: View, index: number): void => {
   if (parent instanceof Page || parent instanceof ScrollView || parent instanceof ContentView) {
-    ;(parent as ContentView).content = child
+    if ((parent as ContentView).content !== child) {
+      ;(parent as ContentView).content = child
+    }
     return
   }
   if (parent instanceof LayoutBase) {
