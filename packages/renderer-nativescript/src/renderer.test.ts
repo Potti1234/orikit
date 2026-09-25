@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { nativeElement } from './node'
+import { customNativeElement, nativeElement } from './node'
 import { createNativeRenderer } from './renderer'
 import type { NativeElementKind, NativeHost, RendererLocalState } from './types'
 
@@ -216,5 +216,66 @@ describe('NativeScript renderer contract', () => {
 
     expect(updates).toEqual(['terrain'])
     expect(disposed).toEqual([first])
+  })
+
+  it('mounts and reconciles children inside custom adapters', () => {
+    const childHost: NativeHost<FakeView> = host
+    const renderer = createNativeRenderer<string, FakeView>({
+      host: childHost,
+      dispatch: () => undefined,
+      customAdapters: {
+        Shell: {
+          create: () => createView('Custom'),
+          update: () => undefined,
+          insertChild: host.insertChild,
+          removeChild: host.removeChild,
+          dispose: () => undefined,
+        },
+      },
+    })
+    const shell = renderer.render(
+      customNativeElement<string>('Shell', {
+        children: [
+          nativeElement('Text', { key: 'a', props: { text: 'A' } }),
+          nativeElement('Text', { key: 'b', props: { text: 'B' } }),
+        ],
+      }),
+    )
+    const a = shell.children[0] as FakeView
+    const b = shell.children[1] as FakeView
+
+    renderer.render(
+      customNativeElement<string>('Shell', {
+        children: [
+          nativeElement('Text', { key: 'b', props: { text: 'B2' } }),
+          nativeElement('Text', { key: 'c', props: { text: 'C' } }),
+        ],
+      }),
+    )
+
+    expect(shell.children).toEqual([b, expect.anything()])
+    expect(b.props.text).toBe('B2')
+    expect(a.disposed).toBe(true)
+  })
+
+  it('rejects children for custom adapters without child support', () => {
+    const renderer = createNativeRenderer<string, FakeView>({
+      host,
+      dispatch: () => undefined,
+      customAdapters: {
+        Leaf: {
+          create: () => createView('Custom'),
+          update: () => undefined,
+          dispose: () => undefined,
+        },
+      },
+    })
+    expect(() =>
+      renderer.render(
+        customNativeElement<string>('Leaf', {
+          children: [nativeElement('Text', { props: { text: 'x' } })],
+        }),
+      ),
+    ).toThrow('MissingChildSupport')
   })
 })

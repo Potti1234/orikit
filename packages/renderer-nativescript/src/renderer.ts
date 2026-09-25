@@ -180,11 +180,14 @@ export const createNativeRenderer = <Message, View>(
     }
     if (node._tag === 'Element') {
       patchProperties(mounted, { _tag: 'Element', kind: node.kind }, node, path)
-      const children = node.children ?? []
+    }
+    const children = node.children ?? []
+    if (children.length > 0 || node._tag === 'Element') {
+      const insertChild = childInserter(node, path)
       assertUniqueKeys(children, path)
       mounted.children = children.map((child, index) => {
         const childMounted = mount(child, `${path}/${identity(child)}[${index}]`)
-        options.host.insertChild(view, childMounted.view, index)
+        insertChild(view, childMounted.view, index)
         return childMounted
       })
     }
@@ -192,11 +195,49 @@ export const createNativeRenderer = <Message, View>(
     return mounted
   }
 
+  const childInserter = (
+    node: NativeNode<Message>,
+    path: string,
+  ): ((view: View, child: View, index: number) => void) => {
+    if (node._tag === 'Element') return options.host.insertChild
+    const adapter = customAdapter(node, path)
+    if (adapter.insertChild === undefined) {
+      throw new RendererError({
+        code: 'MissingChildSupport',
+        path,
+        detail: `Adapter ${JSON.stringify(node.adapter)} does not implement insertChild`,
+      })
+    }
+    return (view, child, index) => adapter.insertChild?.(view, child, index)
+  }
+
+  const childRemover = (
+    node: NativeNode<Message>,
+    path: string,
+  ): ((view: View, child: View) => void) => {
+    if (node._tag === 'Element') return options.host.removeChild
+    const adapter = customAdapter(node, path)
+    if (adapter.removeChild === undefined) {
+      throw new RendererError({
+        code: 'MissingChildSupport',
+        path,
+        detail: `Adapter ${JSON.stringify(node.adapter)} does not implement removeChild`,
+      })
+    }
+    return (view, child) => adapter.removeChild?.(view, child)
+  }
+
   const reconcileChildren = (
     mounted: MountedNode<Message, View>,
-    next: NativeElementNode<Message>,
+    next: NativeNode<Message>,
     path: string,
   ): void => {
+    let insertChild: ((view: View, child: View, index: number) => void) | undefined
+    let removeChild: ((view: View, child: View) => void) | undefined
+    const inserter = (): ((view: View, child: View, index: number) => void) =>
+      (insertChild ??= childInserter(next, path))
+    const remover = (): ((view: View, child: View) => void) =>
+      (removeChild ??= childRemover(next, path))
     const desired = next.children ?? []
     assertUniqueKeys(desired, path)
     const unused = new Set(mounted.children)
@@ -220,10 +261,10 @@ export const createNativeRenderer = <Message, View>(
           : reconcile(existing, child, `${path}/${identity(child)}[${index}]`)
       unused.delete(reconciled)
       ordered.push(reconciled)
-      options.host.insertChild(mounted.view, reconciled.view, index)
+      inserter()(mounted.view, reconciled.view, index)
     }
     for (const removed of unused) {
-      options.host.removeChild(mounted.view, removed.view)
+      remover()(mounted.view, removed.view)
       disposeMounted(removed)
     }
     mounted.children = ordered
@@ -245,6 +286,7 @@ export const createNativeRenderer = <Message, View>(
       reconcileChildren(mounted, next, path)
     } else if (previous._tag === 'Custom' && next._tag === 'Custom') {
       customAdapter(next, path).update(mounted.view, previous, next)
+      reconcileChildren(mounted, next, path)
     }
     patchEvents(mounted, next)
     mounted.node = next
