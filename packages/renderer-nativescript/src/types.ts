@@ -4,14 +4,25 @@ export type NativeElementKind =
   | 'Page'
   | 'Stack'
   | 'Grid'
+  | 'Flexbox'
+  | 'Wrap'
+  | 'Absolute'
+  | 'Dock'
   | 'Scroll'
   | 'Text'
   | 'Button'
   | 'TextField'
+  | 'TextView'
+  | 'SearchBar'
   | 'Switch'
+  | 'Slider'
+  | 'Progress'
   | 'ActivityIndicator'
   | 'Image'
   | 'List'
+  | 'ListPicker'
+  | 'SegmentedBar'
+  | 'HtmlView'
 
 export type NativeEvent<Message> = Message | ((event: unknown) => Message)
 
@@ -43,6 +54,7 @@ export type CustomNativeNode<Message> = Readonly<{
   props?: Readonly<Record<string, unknown>>
   events?: Readonly<Record<string, NativeEvent<Message>>>
   accessibility?: NativeAccessibility
+  children?: ReadonlyArray<NativeNode<Message>>
 }>
 
 export type NativeNode<Message> = NativeElementNode<Message> | CustomNativeNode<Message>
@@ -50,6 +62,8 @@ export type NativeNode<Message> = NativeElementNode<Message> | CustomNativeNode<
 export type NativeElementAdapter<Node, View> = Readonly<{
   create: (node: Node) => View
   update: (view: View, previous: Node, next: Node) => void
+  insertChild?: (view: View, child: View, index: number) => void
+  removeChild?: (view: View, child: View) => void
   dispose: (view: View) => void
 }>
 
@@ -79,6 +93,7 @@ export type RendererDiagnostic = Readonly<{
     | 'InvalidProperty'
     | 'InvalidAccessibility'
     | 'UnknownCustomAdapter'
+    | 'MissingChildSupport'
     | 'NativeOperationFailed'
   path: string
   detail: string

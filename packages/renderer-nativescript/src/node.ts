@@ -23,5 +23,5 @@ export const nativeElement = <Message>(
 
 export const customNativeElement = <Message>(
   adapter: string,
-  options: Omit<ElementOptions<Message>, 'children'> = {},
+  options: ElementOptions<Message> = {},
 ): CustomNativeNode<Message> => ({ _tag: 'Custom', adapter, ...options })
